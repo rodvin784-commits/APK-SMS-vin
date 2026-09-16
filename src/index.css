@@ -1,0 +1,20 @@
+/* Reset template default agar tampilan mobile bersih. */
+
+:root {
+  font: 15px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
+  color: #0f172a;
+  background: #f1f5f9;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  background: #f1f5f9;
+}
+
+h1,
+h2,
+h3 {
+  font-family: inherit;
+  color: inherit;
+}
