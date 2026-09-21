@@ -104,14 +104,14 @@ const splashCss = `
 }
 @keyframes splashZoom{
   0%{ transform:scale(0.8); opacity:0; animation-timing-function:cubic-bezier(0.25,1,0.5,1); }
-  40%{ transform:scale(3.8); opacity:1; animation-timing-function:linear; }
-  80%{ transform:scale(3.8); opacity:1; animation-timing-function:ease-in; }
+  40%{ transform:scale(2.4); opacity:1; animation-timing-function:linear; }
+  80%{ transform:scale(2.4); opacity:1; animation-timing-function:ease-in; }
   100%{ transform:scale(1); opacity:1; }
 }
 @keyframes splashGlow{
   0%{ transform:scale(0.8); opacity:0; }
-  40%{ transform:scale(3.8); opacity:0.9; }
-  80%{ transform:scale(3.8); opacity:0.9; }
+  40%{ transform:scale(2.4); opacity:0.9; }
+  80%{ transform:scale(2.4); opacity:0.9; }
   100%{ transform:scale(1); opacity:0.5; }
 }
 @keyframes splashShine{
