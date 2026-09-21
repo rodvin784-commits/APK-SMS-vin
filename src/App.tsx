@@ -68,7 +68,7 @@ export default function App() {
   })
 
   useEffect(() => {
-    try { localStorage.setItem('siswa_dark', darkMode ? '1' : '0') } catch {}
+    try { localStorage.setItem('siswa_dark', darkMode ? '1' : '0') } catch { void 0 }
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light')
   }, [darkMode])
 
@@ -91,7 +91,7 @@ export default function App() {
           showNotification(n.judul, n.pesan ?? 'Anda memiliki notifikasi baru.')
         }
       } catch {
-        // ignore
+        void 0
       }
     }
 
