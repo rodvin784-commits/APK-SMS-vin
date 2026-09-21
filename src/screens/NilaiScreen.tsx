@@ -1,21 +1,43 @@
 import { useEffect, useState } from 'react'
 import { fetchNilai } from '../lib/api'
 import type { NilaiItem } from '../lib/types'
+import { mapErrorMessage } from '../lib/format'
 
 export default function NilaiScreen() {
   const [nilai, setNilai] = useState<NilaiItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [muatUlang, setMuatUlang] = useState(0)
 
   useEffect(() => {
-    fetchNilai()
-      .then(setNilai)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Gagal memuat nilai.'))
-      .finally(() => setLoading(false))
-  }, [])
+    async function init() {
+      try {
+        const data = await fetchNilai()
+        setNilai(data)
+        setError(null)
+      } catch (err) {
+        setError(mapErrorMessage(err))
+      } finally {
+        setLoading(false)
+      }
+    }
+    init()
+  }, [muatUlang])
+
+  const muat = () => {
+    setLoading(true)
+    setMuatUlang((k) => k + 1)
+  }
 
   if (loading) return <div className="loading">Memuat nilai...</div>
-  if (error) return <div className="alert alert-error">{error}</div>
+  if (error) {
+    return (
+      <div className="screen">
+        <div className="alert alert-error">{error}</div>
+        <button className="btn-primary" onClick={muat}>Coba lagi</button>
+      </div>
+    )
+  }
 
   return (
     <div className="screen">

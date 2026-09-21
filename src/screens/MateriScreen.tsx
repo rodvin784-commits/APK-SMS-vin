@@ -1,22 +1,51 @@
 import { useEffect, useState } from 'react'
 import { downloadMateri, fetchMateri } from '../lib/api'
 import type { MateriItem } from '../lib/types'
-import { formatTanggal } from '../lib/format'
+import { formatTanggal, mapErrorMessage } from '../lib/format'
+import { cacheMateri, getCachedMateri } from '../lib/cache'
 
 export default function MateriScreen() {
   const [materi, setMateri] = useState<MateriItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [muatUlang, setMuatUlang] = useState(0)
 
   useEffect(() => {
-    fetchMateri()
-      .then(setMateri)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Gagal memuat materi.'))
-      .finally(() => setLoading(false))
-  }, [])
+    async function init() {
+      const cached = getCachedMateri()
+      try {
+        const data = await fetchMateri()
+        setMateri(data)
+        cacheMateri(data)
+        setError(null)
+      } catch (err) {
+        if (cached) {
+          setMateri(cached)
+          setError('Menampilkan data cache (offline). ' + mapErrorMessage(err))
+        } else {
+          setError(mapErrorMessage(err))
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+    init()
+  }, [muatUlang])
+
+  const muat = () => {
+    setLoading(true)
+    setMuatUlang((k) => k + 1)
+  }
 
   if (loading) return <div className="loading">Memuat materi...</div>
-  if (error) return <div className="alert alert-error">{error}</div>
+  if (error) {
+    return (
+      <div className="screen">
+        <div className="alert alert-error">{error}</div>
+        <button className="btn-primary" onClick={muat}>Coba lagi</button>
+      </div>
+    )
+  }
 
   return (
     <div className="screen">
@@ -39,7 +68,7 @@ export default function MateriScreen() {
                       const { url } = await downloadMateri(m.id)
                       window.open(url, '_blank')
                     } catch (err) {
-                      setError(err instanceof Error ? err.message : 'Gagal mengunduh materi.')
+                      setError(mapErrorMessage(err))
                     }
                   }}
                 >

@@ -34,6 +34,7 @@ export interface TugasItem {
   tanggal_mulai: string
   deadline: string
   lampiran_url: string | null
+  foto_urls: string[] | null
   status: string
   created_at: string
   guru_nama: string
@@ -43,8 +44,13 @@ export interface TugasItem {
     id: string
     status: string | null
     nama_file: string | null
+    foto_urls: string[] | null
+    jawaban_teks: string | null
     catatan: string | null
     submitted_at: string | null
+    nilai: number | null
+    feedback: string | null
+    dinilai_at: string | null
   } | null
 }
 

@@ -15,6 +15,8 @@ export function mapErrorMessage(error: unknown): string {
     ) {
       return 'Koneksi terputus, silakan coba lagi'
     }
+    // Fallback ke message asli jika sudah cocok pattern
+    if (error.message) return error.message
   }
   // HTTP status code (biasa dilempar dari api layer)
   if (typeof error === 'object' && error !== null && 'status' in error) {

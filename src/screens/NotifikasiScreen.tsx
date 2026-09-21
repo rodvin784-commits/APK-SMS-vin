@@ -1,26 +1,38 @@
 import { useEffect, useState } from 'react'
 import { fetchNotifikasi, tandaiNotifikasiDibaca } from '../lib/api'
 import type { NotifikasiItem } from '../lib/types'
-import { formatTanggalJam } from '../lib/format'
+import { formatTanggalJam, mapErrorMessage } from '../lib/format'
 
-export default function NotifikasiScreen() {
+interface Props {
+  onCountChange?: (count: number) => void
+}
+
+export default function NotifikasiScreen({ onCountChange }: Props) {
   const [items, setItems] = useState<NotifikasiItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [muatUlang, setMuatUlang] = useState(0)
 
   useEffect(() => {
     async function init() {
       try {
-        const { items } = await fetchNotifikasi()
+        const { items, belumDibaca } = await fetchNotifikasi()
         setItems(items)
+        setError(null)
+        onCountChange?.(belumDibaca)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Gagal memuat notifikasi.')
+        setError(mapErrorMessage(err))
       } finally {
         setLoading(false)
       }
     }
     init()
-  }, [])
+  }, [onCountChange, muatUlang])
+
+  const muat = () => {
+    setLoading(true)
+    setMuatUlang((k) => k + 1)
+  }
 
   const tandaiSemua = async () => {
     const belum = items.filter((n) => !n.is_read).map((n) => n.id)
@@ -28,8 +40,9 @@ export default function NotifikasiScreen() {
     try {
       await tandaiNotifikasiDibaca(belum)
       setItems((prev) => prev.map((n) => ({ ...n, is_read: true })))
+      onCountChange?.(0)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Gagal menandai notifikasi.')
+      setError(mapErrorMessage(err))
     }
   }
 
@@ -46,7 +59,12 @@ export default function NotifikasiScreen() {
         </button>
       </div>
 
-      {error && <div className="alert alert-error">{error}</div>}
+      {error && (
+        <div className="alert alert-error">
+          {error}
+          <button className="btn-primary" onClick={muat} style={{ marginLeft: '1rem' }}>Coba lagi</button>
+        </div>
+      )}
 
       {items.length === 0 ? (
         <p className="kosong">Belum ada notifikasi.</p>

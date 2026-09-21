@@ -1,22 +1,43 @@
 import { useEffect, useState } from 'react'
 import { fetchPengumuman } from '../lib/api'
 import type { PengumumanItem } from '../lib/types'
-import { formatTanggal } from '../lib/format'
+import { formatTanggal, mapErrorMessage } from '../lib/format'
 
 export default function PengumumanScreen() {
   const [items, setItems] = useState<PengumumanItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [muatUlang, setMuatUlang] = useState(0)
 
   useEffect(() => {
-    fetchPengumuman()
-      .then(setItems)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Gagal memuat pengumuman.'))
-      .finally(() => setLoading(false))
-  }, [])
+    async function init() {
+      try {
+        const data = await fetchPengumuman()
+        setItems(data)
+        setError(null)
+      } catch (err) {
+        setError(mapErrorMessage(err))
+      } finally {
+        setLoading(false)
+      }
+    }
+    init()
+  }, [muatUlang])
+
+  const muat = () => {
+    setLoading(true)
+    setMuatUlang((k) => k + 1)
+  }
 
   if (loading) return <div className="loading">Memuat pengumuman...</div>
-  if (error) return <div className="alert alert-error">{error}</div>
+  if (error) {
+    return (
+      <div className="screen">
+        <div className="alert alert-error">{error}</div>
+        <button className="btn-primary" onClick={muat}>Coba lagi</button>
+      </div>
+    )
+  }
 
   return (
     <div className="screen">

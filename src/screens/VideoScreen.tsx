@@ -17,30 +17,52 @@ function youtubeEmbed(url: string): string | null {
   }
 }
 
-// Memeriksa apakah URL berasal dari host YouTube yang valid.
-function isYoutubeUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url)
-    return VALID_YT_HOSTS.includes(parsed.hostname)
-  } catch {
-    return false
-  }
+function youtubeThumbnail(url: string | null): string | null {
+  if (!url) return null
+  const m = url.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/)
+  return m ? `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` : null
+}
+
+function thumbFor(v: VideoItem): string | null {
+  return v.thumbnail_url || youtubeThumbnail(v.video_url)
 }
 
 export default function VideoScreen() {
   const [video, setVideo] = useState<VideoItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [muatUlang, setMuatUlang] = useState(0)
+  const [playingId, setPlayingId] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchVideo()
-      .then(setVideo)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Gagal memuat video.'))
-      .finally(() => setLoading(false))
-  }, [])
+    async function init() {
+      try {
+        const data = await fetchVideo()
+        setVideo(data)
+        setError(null)
+      } catch (err) {
+        setError(mapErrorMessage(err))
+      } finally {
+        setLoading(false)
+      }
+    }
+    init()
+  }, [muatUlang])
+
+  const muat = () => {
+    setLoading(true)
+    setMuatUlang((k) => k + 1)
+  }
 
   if (loading) return <div className="loading">Memuat video...</div>
-  if (error) return <div className="alert alert-error">{error}</div>
+  if (error) {
+    return (
+      <div className="screen">
+        <div className="alert alert-error">{error}</div>
+        <button className="btn-primary" onClick={muat}>Coba lagi</button>
+      </div>
+    )
+  }
 
   return (
     <div className="screen">
@@ -49,23 +71,44 @@ export default function VideoScreen() {
       ) : (
         video.map((v) => {
           const embed = v.video_url ? youtubeEmbed(v.video_url) : null
+          const thumb = thumbFor(v)
+          const isPlaying = playingId === v.id
           return (
             <div key={v.id} className="item-card">
-              {embed ? (
+              {thumb && !isPlaying && (
+                <div style={{ position: 'relative', width: '100%', height: '180px', borderRadius: '10px', overflow: 'hidden', background: '#111', marginBottom: '0.6rem', cursor: embed ? 'pointer' : 'default' }} onClick={() => embed && setPlayingId(v.id)}>
+                  <img src={thumb} alt={v.judul} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
+                  {embed && (
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.25)' }}>
+                      <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(239,68,68,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', color: 'white' }}>▶</div>
+                    </div>
+                  )}
+                </div>
+              )}
+              {isPlaying && embed ? (
                 <div className="video-frame">
                   <iframe
-                    src={embed}
+                    src={`${embed}?autoplay=1`}
                     title={v.judul}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
+                    sandbox="allow-scripts allow-same-origin allow-presentation"
                   />
                 </div>
-              ) : (
-                v.video_url && (
-                  <a className="btn-secondary" href={v.video_url} target="_blank" rel="noreferrer">
-                    ▶ Tonton di browser
-                  </a>
-                )
+              ) : v.video_url && !thumb ? (
+                <a className="btn-secondary" href={v.video_url} target="_blank" rel="noreferrer" style={{ marginBottom: '0.5rem', display: 'inline-block' }}>
+                  ▶ Tonton di browser
+                </a>
+              ) : null}
+              {thumb && isPlaying && v.video_url && (
+                <a className="btn-secondary" href={v.video_url} target="_blank" rel="noreferrer" style={{ marginBottom: '0.5rem', display: 'inline-block' }}>
+                  ↗ Buka di YouTube
+                </a>
+              )}
+              {thumb && !isPlaying && v.video_url && (
+                <a className="btn-secondary" href={v.video_url} target="_blank" rel="noreferrer" style={{ marginBottom: '0.5rem', display: 'inline-block', marginLeft: '0.5rem' }}>
+                  ↗ Buka link
+                </a>
               )}
               <div className="item-head">
                 <strong>{v.judul}</strong>

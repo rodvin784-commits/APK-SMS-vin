@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { loginSiswa } from '../lib/api'
-import { assertConfig } from '../lib/env'
+import { mapErrorMessage } from '../lib/format'
+import type { Me } from '../lib/types'
+import logo from '../assets/gambar3.png'
 
 interface Props {
-  onSuccess: () => void
+  onSuccess: (me: Me) => void
 }
 
 export default function LoginScreen({ onSuccess }: Props) {
@@ -17,11 +19,10 @@ export default function LoginScreen({ onSuccess }: Props) {
     setError(null)
     setLoading(true)
     try {
-      assertConfig()
-      await loginSiswa(email, password)
-      onSuccess()
+      const me = await loginSiswa(email, password)
+      onSuccess(me)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Gagal masuk.')
+      setError(mapErrorMessage(err))
     } finally {
       setLoading(false)
     }
@@ -30,7 +31,7 @@ export default function LoginScreen({ onSuccess }: Props) {
   return (
     <div className="login-screen">
       <div className="login-card">
-        <div className="login-logo">🎓</div>
+        <img src={logo} alt="Logo" className="login-logo" />
         <h1>Portal Siswa</h1>
         <p className="login-sub">Masuk dengan akun yang diberikan admin sekolah</p>
 

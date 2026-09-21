@@ -34,12 +34,19 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiRequestError('Sesi berakhir. Silakan login kembali.', 401)
   }
 
+  // Otomatis tambahkan Content-Type: application/json jika body adalah string JSON
+  const extraHeaders: Record<string, string> = {}
+  if (typeof init?.body === 'string' && !((init?.headers as Record<string, string>)?.['Content-Type'])) {
+    extraHeaders['Content-Type'] = 'application/json'
+  }
+
   let res: Response
   try {
     res = await fetch(`${API_BASE_URL}${path}`, {
       ...init,
       headers: {
         ...(init?.headers ?? {}),
+        ...extraHeaders,
         Authorization: authorization,
       },
     })
@@ -96,60 +103,80 @@ export async function fetchTugas(): Promise<TugasItem[]> {
   return json.tugas
 }
 
-export async function downloadLampiranTugas(tugasId: string): Promise<{ url: string; nama_file: string | null }> {
-  return request('/api/siswa/tugas', {
+export async function downloadLampiranTugas(tugasId: string, fotoIndex?: number): Promise<{ url: string; nama_file: string | null; foto_urls?: string[] | null }> {
+  const body: Record<string, unknown> = { id: tugasId }
+  if (fotoIndex !== undefined) body.foto_index = fotoIndex
+  return request('/api/siswa/tugas/download', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: tugasId }),
+    body: JSON.stringify(body),
   })
 }
 
-export async function fetchPengumpulan(tugasId: string): Promise<{
-  pengumpulan: { id: string; status: string | null; nama_file: string | null; catatan: string | null; submitted_at: string | null } | null
-}> {
-  const json = await request<{ pengumpulan: TugasItem['pengumpulan'] }>(
-    `/api/siswa/pengumpulan?tugas_id=${encodeURIComponent(tugasId)}`
-  )
-  return { pengumpulan: json.pengumpulan }
+export async function fetchFotoTugas(tugasId: string): Promise<string[]> {
+  const res = await downloadLampiranTugas(tugasId)
+  return (res as { foto_urls?: string[] }).foto_urls ?? []
 }
 
 export async function uploadPengumpulan(
   tugasId: string,
-  file: File,
-  catatan: string
+  file: File | null,
+  jawabanTeks: string,
+  catatan: string,
+  onProgress?: (percent: number) => void,
+  fotos?: File[]
 ): Promise<{ message: string; status: string }> {
   const form = new FormData()
   form.append('tugas_id', tugasId)
-  form.append('file', file)
-  form.append('catatan', catatan)
+  if (file) form.append('file', file)
+  if (fotos && fotos.length > 0) {
+    for (const f of fotos) form.append('fotos', f)
+  }
+  if (jawabanTeks.trim()) form.append('jawaban_teks', jawabanTeks)
+  if (catatan.trim()) form.append('catatan', catatan)
 
   const authorization = await authHeader()
   if (!authorization) throw new ApiRequestError('Sesi berakhir. Silakan login kembali.', 401)
 
-  let res: Response
-  try {
-    res = await fetch(`${API_BASE_URL}/api/siswa/pengumpulan`, {
-      method: 'POST',
-      headers: { Authorization: authorization },
-      body: form,
-    })
-  } catch {
-    throw new ApiRequestError('Tidak dapat terhubung ke server. Periksa koneksi internet Anda.')
-  }
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', `${API_BASE_URL}/api/siswa/pengumpulan`)
+    xhr.setRequestHeader('Authorization', authorization)
 
-  const json = (await res.json().catch(() => null)) as { message?: string; error?: string; status?: string } | null
+    if (onProgress) {
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          onProgress(Math.round((e.loaded / e.total) * 100))
+        }
+      })
+    }
 
-  if (!res.ok) {
-    throw new ApiRequestError(json?.error ?? `Gagal mengunggah (${res.status}).`, res.status)
-  }
-  return { message: json?.message ?? 'Berhasil.', status: json?.status ?? '' }
+    xhr.onload = () => {
+      const json = (() => {
+        try { return JSON.parse(xhr.responseText) as { message?: string; error?: string; status?: string } }
+        catch { return null }
+      })()
+
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve({ message: json?.message ?? 'Berhasil.', status: json?.status ?? '' })
+      } else {
+        reject(new ApiRequestError(json?.error ?? `Gagal mengunggah (${xhr.status}).`, xhr.status))
+      }
+    }
+
+    xhr.onerror = () => {
+      reject(new ApiRequestError('Tidak dapat terhubung ke server. Periksa koneksi internet Anda.'))
+    }
+
+    xhr.send(form)
+  })
 }
 
-export async function downloadJawaban(pengumpulanId: string): Promise<{ url: string; nama_file: string | null }> {
+export async function downloadJawaban(pengumpulanId: string, fotoIndex?: number): Promise<{ url: string; nama_file: string | null; foto_urls?: string[] | null }> {
+  const body: Record<string, unknown> = { pengumpulan_id: pengumpulanId }
+  if (fotoIndex !== undefined) body.foto_index = fotoIndex
   return request('/api/siswa/pengumpulan/download', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ pengumpulan_id: pengumpulanId }),
+    body: JSON.stringify(body),
   })
 }
 
@@ -163,7 +190,6 @@ export async function fetchMateri(): Promise<MateriItem[]> {
 export async function downloadMateri(materiId: string): Promise<{ url: string; nama_file: string | null }> {
   return request('/api/siswa/materi/download', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id: materiId }),
   })
 }
@@ -206,7 +232,6 @@ export async function fetchNotifikasi(): Promise<{ items: NotifikasiItem[]; belu
 export async function tandaiNotifikasiDibaca(ids: string[]): Promise<void> {
   await request('/api/siswa/notifikasi', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ids }),
   })
 }
