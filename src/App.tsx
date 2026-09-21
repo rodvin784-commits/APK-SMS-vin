@@ -27,6 +27,11 @@ interface Sesi {
   loading: boolean
 }
 
+/**
+ * App — Root APK Siswa. Alur: Splash → (cek sesi) → Login → Welcome → AppShell (Header + Main + BottomNav).
+ * Struktur folder: src/screens/* = halaman per fitur, src/components/* = UI reusable, src/lib/* = API & util.
+ * Untuk pengembang baru: tambah tab baru → 1) tambah di BottomNav.tsx TABS, 2) tambah case di <main> bawah ini.
+ */
 export default function App() {
   const [sesi, setSesi] = useState<Sesi>({ me: null, loading: true })
   const [tab, setTab] = useState<Tab>('dashboard')
@@ -64,7 +69,10 @@ export default function App() {
       .catch(() => setSesi({ me: null, loading: false }))
   }, [])
 
+  // Logout sederhana dengan konfirmasi agar awam tidak salah tap.
   const handleLogout = async () => {
+    const yakin = window.confirm('Keluar dari akun? Anda perlu login lagi untuk masuk.')
+    if (!yakin) return
     await logoutSiswa()
     clearAllCache()
     setSesi({ me: null, loading: false })
@@ -111,6 +119,8 @@ export default function App() {
             nama={toTitleCase(me.siswa.nama_lengkap ?? 'Siswa')}
             kelas={kelasLabel}
             onOpenTugas={() => setTab('tugas')}
+            onOpenMateri={() => setTab('materi')}
+            onOpenVideo={() => setTab('video')}
             onOpenNotifikasi={() => setTab('notifikasi')}
           />
         )}

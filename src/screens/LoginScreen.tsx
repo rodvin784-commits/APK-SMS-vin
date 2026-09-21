@@ -1,3 +1,7 @@
+/**
+ * LoginScreen — Form masuk siswa (mobile). Input email + password, validasi & pesan error ramah awam.
+ * OnSuccess → App.tsx akan set sesi & tampilkan WelcomeScreen.
+ */
 import { useState } from 'react'
 import { loginSiswa } from '../lib/api'
 import { mapErrorMessage } from '../lib/format'
@@ -6,7 +10,7 @@ import logo from '../assets/logo-bn.png'
 import { MdVisibility, MdVisibilityOff, MdLockOutline, MdMailOutline, MdErrorOutline } from 'react-icons/md'
 
 interface Props {
-  onSuccess: (me: Me) => void
+  onSuccess: (me: Me) => void // callback setelah login berhasil
 }
 
 export default function LoginScreen({ onSuccess }: Props) {

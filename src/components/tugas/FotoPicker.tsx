@@ -1,10 +1,14 @@
+/**
+ * FotoPicker — Picker foto untuk jawaban tugas (maks 5, 8MB/foto).
+ * Dua tombol: Pilih Foto (galeri) dan Ambil Foto (kamera) — ramah awam.
+ */
 import { useRef } from 'react'
 
 interface Props {
-  files: File[]
-  previews: string[]
+  files: File[] // file yang sudah dipilih (untuk label nama)
+  previews: string[] // URL.createObjectURL untuk preview
   onAdd: (files: FileList | null) => void
-  onRemove: (idx: number) => void
+  onRemove: (idx: number) => void // hapus foto ke-idx
   error?: string | null
 }
 

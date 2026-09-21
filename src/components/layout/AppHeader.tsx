@@ -1,13 +1,17 @@
+/**
+ * AppHeader — Header atas APK (sticky). Menampilkan judul, toggle tema, notif, avatar, logout.
+ * Semua aksi di-inject via props agar mudah di-test & diganti.
+ */
 import { MdNotificationsNone, MdPerson, MdLogout } from 'react-icons/md'
 
 interface Props {
-  title?: string
-  unreadCount: number
+  title?: string // default: "SMK Bagimu Negeriku"
+  unreadCount: number // untuk badge merah di ikon lonceng
   darkMode: boolean
-  userName: string
+  userName: string // tampil di tooltip avatar
   onToggleDark: () => void
   onOpenNotifikasi: () => void
-  onLogout: () => void
+  onLogout: () => void // dipanggil setelah konfirmasi (ditangani di App.tsx)
 }
 
 export default function AppHeader({ title = 'SMK Bagimu Negeriku', unreadCount, darkMode, userName, onToggleDark, onOpenNotifikasi, onLogout }: Props) {

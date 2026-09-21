@@ -9,18 +9,27 @@ import Button from '../components/ui/Button'
 import TugasCard from '../components/tugas/TugasCard'
 import FotoPicker from '../components/tugas/FotoPicker'
 
+/**
+ * TugasScreen — Daftar tugas siswa + fitur kumpul jawaban (teks / file / foto).
+ * Alur awam: cari → lihat kartu → tap "Kumpulkan" → isi jawaban / pilih file / tambah foto → Kirim.
+ */
+
 export default function TugasScreen() {
+  // --- State utama ---
   const [tugas, setTugas] = useState<TugasItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [pesan, setPesan] = useState<string | null>(null)
+  // Form pengumpulan: kumpulId = tugas yang sedang dibuka form-nya
   const [kumpulId, setKumpulId] = useState<string | null>(null)
   const [form, setForm] = useState({ jawaban: '', catatan: '' })
   const [kumpulLoading, setKumpulLoading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState<number | null>(null)
+  // File & foto: fileRefs untuk input file single, fotoFiles untuk multi-foto (max 5)
   const fileRefs = useRef<Record<string, HTMLInputElement | null>>({})
   const [fotoFiles, setFotoFiles] = useState<File[]>([])
   const [fotoPreviews, setFotoPreviews] = useState<string[]>([])
+  // Cache URL foto yang sudah di-fetch agar tidak fetch berulang
   const [tugasFotoUrls, setTugasFotoUrls] = useState<Record<string, string[]>>({})
   const [jawabanFotoUrls, setJawabanFotoUrls] = useState<Record<string, string[]>>({})
   const [searchQuery, setSearchQuery] = useState('')

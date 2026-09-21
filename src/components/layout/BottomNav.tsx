@@ -1,9 +1,16 @@
 /* eslint-disable react-refresh/only-export-components */
+/**
+ * BottomNav — Navigasi bawah APK Siswa (mobile).
+ * Daftar tab terpusat di TABS agar mudah tambah/kurangi.
+ * Tips pengembang: jika tambah tab, pastikan max 5-6 agar tidak sesak di HP kecil; 8 tab saat ini masih bisa tapi 5 lebih ideal untuk awam.
+ */
 import type { ReactNode } from 'react'
 import { MdHome, MdOutlineAssignment, MdBook, MdPlayCircleOutline, MdInfoOutline, MdOutlineCalendarMonth, MdEmojiEvents, MdNotificationsNone } from 'react-icons/md'
 
+// Tipe tab yang diakui App.tsx — ubah di sini dan di App.tsx secara bersamaan.
 export type Tab = 'dashboard' | 'tugas' | 'materi' | 'video' | 'pengumuman' | 'jadwal' | 'nilai' | 'notifikasi'
 
+// Definisi tiap tombol navigasi: id harus sama dengan Tab, label tampil di bawah ikon.
 interface TabDef {
   id: Tab
   icon: (active: boolean) => ReactNode

@@ -1,11 +1,16 @@
+/**
+ * SplashScreen — Layar pembuka animasi logo (hanya logo selama zoom, teks muncul belakangan agar tidak tabrakan).
+ * Timeline: 0–1.51s logo scale 2.2, 1.58s teks fade-in, 1.72s loader fade-in, total 2.1s lalu callback onFinish.
+ * Untuk pengembang: ubah DURATION => sesuaikan delay animasi di splashCss (.splash-text 1.58s, .splash-loader 1.72s).
+ */
 import { useEffect, useState } from 'react'
 import logo from '../../assets/logo-bn.png'
 
 interface Props {
-  onFinish: () => void
+  onFinish: () => void // dipanggil App.tsx untuk sembunyikan splash
 }
 
-const DURATION = 2100
+const DURATION = 2100 // ms — total durasi splash sebelum hilang
 
 export default function SplashScreen({ onFinish }: Props) {
   const [out, setOut] = useState(false)
@@ -110,7 +115,7 @@ const splashCss = `
   transform: rotate(22deg);
   animation: splashShine 2.1s ease forwards;
 }
-.splash-text{ margin-top:22px; text-align:center; animation: splashTextIn .7s .55s both cubic-bezier(.16,1,.3,1); }
+.splash-text{ margin-top:22px; text-align:center; opacity:0; animation: splashTextIn .55s 1.58s both cubic-bezier(.16,1,.3,1); }
 .splash-title{
   font-family:'Plus Jakarta Sans','Inter',sans-serif;
   font-size:20px; font-weight:800; color:#0f172a;
@@ -121,7 +126,7 @@ const splashCss = `
   letter-spacing:.5px; text-transform:uppercase;
   margin:6px 0 0; opacity:.85;
 }
-.splash-loader{ display:flex; gap:6px; margin-top:18px; }
+.splash-loader{ display:flex; gap:6px; margin-top:18px; opacity:0; animation: splashLoaderIn .45s 1.72s both ease; }
 .splash-dot{
   width:6px; height:6px; border-radius:50%; background:#0284c7;
   opacity:.9; animation: splashDot 1s infinite;
@@ -152,5 +157,6 @@ const splashCss = `
   100%{ left:155%; }
 }
 @keyframes splashTextIn{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+@keyframes splashLoaderIn{ from{ opacity:0;} to{opacity:1;} }
 @keyframes splashDot{ 0%,100%{ transform:translateY(0); opacity:.9;} 50%{ transform:translateY(-4px); opacity:1;} }
 `

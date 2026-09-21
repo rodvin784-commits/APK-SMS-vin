@@ -1,3 +1,7 @@
+/**
+ * WelcomeScreen — Layar sapa setelah login, menampilkan nama & kelas sebelum masuk dashboard.
+ * Tombol "Masuk ke Portal" → App.tsx set showWelcome=false.
+ */
 import logo from '../assets/logo-bn.png'
 import Button from '../components/ui/Button'
 import { MdVerified, MdSchool, MdAssignment, MdPlayCircleOutline } from 'react-icons/md'
@@ -5,7 +9,7 @@ import { toTitleCase } from '../lib/format'
 
 interface Props {
   nama: string
-  kelasLabel: string
+  kelasLabel: string // contoh: "XII RPL 1 · 2024/2025"
   onMasuk: () => void
 }
 

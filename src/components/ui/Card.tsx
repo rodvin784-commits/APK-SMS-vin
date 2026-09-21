@@ -1,9 +1,13 @@
+/**
+ * Card — Komponen kartu generik untuk Materi, Pengumuman, dll.
+ * Gunakan CardHead untuk judul, CardMeta untuk info kecil, CardDesc untuk paragraf, CardActions untuk tombol.
+ */
 import type { ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
   className?: string
-  onClick?: () => void
+  onClick?: () => void // jika ada → kartu jadi tombol (role=button)
 }
 
 export function Card({ children, className, onClick }: Props) {

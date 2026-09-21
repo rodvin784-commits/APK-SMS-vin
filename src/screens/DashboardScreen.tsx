@@ -1,3 +1,9 @@
+/**
+ * DashboardScreen — Halaman utama siswa (mobile).
+ * Menampilkan: salam, hero banner, 4 kartu statistik, jadwal hari ini, tugas & pengumuman terbaru.
+ * Catatan untuk pengembang: data diambil dari GET /api/siswa/dashboard (lihat lib/api.ts).
+ * Navigasi tab di-handle oleh App.tsx via props onOpenX — jangan hardcode navigate di sini.
+ */
 import { useEffect, useMemo, useState } from 'react'
 import { fetchDashboard } from '../lib/api'
 import type { DashboardData } from '../lib/types'
@@ -39,6 +45,7 @@ function formatTanggalLengkap(): string {
   return `${h}, ${t} ${b} ${th}\n${jam}:${menit} WIB`
 }
 
+// Helper: tentukan label & warna badge deadline agar siswa paham urgensi.
 function getDeadlineBadge(deadline: string): { text: string; color: string; bg: string } {
   const now = new Date()
   const dl = new Date(deadline)
@@ -49,14 +56,17 @@ function getDeadlineBadge(deadline: string): { text: string; color: string; bg: 
   return { text: formatTanggal(deadline), color: '#6B7280', bg: '#F3F4F6' }
 }
 
+// Props: semua handler navigasi berasal dari App.tsx agar satu sumber kebenaran (single source of truth).
 interface Props {
   nama: string
   kelas: string
   onOpenTugas: () => void
+  onOpenMateri: () => void
+  onOpenVideo: () => void
   onOpenNotifikasi: () => void
 }
 
-export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenNotifikasi }: Props) {
+export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenMateri, onOpenVideo, onOpenNotifikasi }: Props) {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -136,7 +146,8 @@ export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenNotifi
           <span className="stat-count">{data.counts.tugas}</span>
           <span className="stat-title">Tugas</span>
         </button>
-        <button className="stat-card stat-materi" onClick={() => {}}>
+        {/* Kartu Materi — arahkan ke tab Materi (sebelumnya kosong, diperbaiki untuk UX awam) */}
+        <button className="stat-card stat-materi" onClick={onOpenMateri} aria-label="Buka materi">
           <div className="stat-header">
             <MdBook size={24} color="#4CAF50" />
             <MdChevronRight size={20} color="#999" />
@@ -144,7 +155,8 @@ export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenNotifi
           <span className="stat-count">{data.counts.materi}</span>
           <span className="stat-title">Materi</span>
         </button>
-        <button className="stat-card stat-video" onClick={() => {}}>
+        {/* Kartu Video — arahkan ke tab Video */}
+        <button className="stat-card stat-video" onClick={onOpenVideo} aria-label="Buka video">
           <div className="stat-header">
             <MdPlayCircleOutline size={24} color="#9C27B0" />
             <MdChevronRight size={20} color="#999" />

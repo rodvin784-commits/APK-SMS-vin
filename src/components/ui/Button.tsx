@@ -1,3 +1,6 @@
+/**
+ * Button — Tombol reusable APK. Varian: primary (gelap), secondary (outline abu), ghost (ikon transparan).
+ */
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 type Variant = 'primary' | 'secondary' | 'ghost'
