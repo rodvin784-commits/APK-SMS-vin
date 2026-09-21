@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { loginSiswa } from '../lib/api'
 import { mapErrorMessage } from '../lib/format'
 import type { Me } from '../lib/types'
-import logo from '../assets/gambar3.png'
+import logo from '../assets/logo-bn.png'
 
 interface Props {
   onSuccess: (me: Me) => void

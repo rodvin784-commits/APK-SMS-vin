@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import logo from '../../assets/gambar3.png'
+import logo from '../../assets/logo-bn.png'
 
 interface Props {
   onFinish: () => void

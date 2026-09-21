@@ -1,4 +1,4 @@
-import logo from '../assets/gambar3.png'
+import logo from '../assets/logo-bn.png'
 import Button from '../components/ui/Button'
 
 interface Props {
