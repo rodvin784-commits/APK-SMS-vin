@@ -881,3 +881,60 @@ button {
 .bottom-nav-new { border-top: 1px solid #f1f5f9; }
 .stat-card { border: 1px solid #f1f5f9; }
 .hero-banner { background: #0f172a; }
+
+/* ---------- Welcome screen ---------- */
+.welcome-screen{
+  min-height:100svh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background: radial-gradient(circle at center, #e0f2fe 0%, #38bdf8 50%, #0284c7 100%);
+}
+.welcome-card{
+  width:100%;
+  background:#fff;
+  border-radius:20px;
+  padding:28px 22px;
+  text-align:center;
+  box-shadow:0 24px 48px rgba(2,132,199,0.25);
+}
+.welcome-logo{
+  width:88px;
+  height:88px;
+  object-fit:contain;
+  border-radius:18px;
+  margin:0 auto 14px;
+  display:block;
+}
+.welcome-hello{
+  font-size:13px;
+  color:#64748b;
+  margin:0;
+}
+.welcome-name{
+  font-size:22px;
+  font-weight:800;
+  color:#0f172a;
+  margin:6px 0;
+}
+.welcome-kelas{
+  font-size:13px;
+  color:#0284c7;
+  font-weight:600;
+  margin:0;
+}
+.welcome-desc{
+  font-size:13px;
+  color:#64748b;
+  margin:10px 0 0;
+  line-height:1.5;
+}
+.welcome-logout{
+  margin-top:12px;
+  background:none;
+  border:none;
+  color:#64748b;
+  font-size:12.5px;
+  text-decoration:underline;
+}

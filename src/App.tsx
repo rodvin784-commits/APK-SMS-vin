@@ -18,6 +18,8 @@ import BottomNav from './components/layout/BottomNav'
 import type { Tab } from './components/layout/BottomNav'
 import { usePollingNotifikasi } from './hooks/usePollingNotifikasi'
 import Loading from './components/ui/Loading'
+import SplashScreen from './components/layout/SplashScreen'
+import WelcomeScreen from './screens/WelcomeScreen'
 
 interface Sesi {
   me: Me | null
@@ -27,6 +29,8 @@ interface Sesi {
 export default function App() {
   const [sesi, setSesi] = useState<Sesi>({ me: null, loading: true })
   const [tab, setTab] = useState<Tab>('dashboard')
+  const [showSplash, setShowSplash] = useState(true)
+  const [showWelcome, setShowWelcome] = useState(false)
   const [darkMode, setDarkMode] = useState(() => {
     try { return localStorage.getItem('siswa_dark') === '1' } catch { return false }
   })
@@ -36,7 +40,7 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light')
   }, [darkMode])
 
-  const { unreadCount, setUnreadCount } = usePollingNotifikasi(!!sesi.me)
+  const { unreadCount, setUnreadCount } = usePollingNotifikasi(!!sesi.me && !showWelcome && !showSplash)
 
   useEffect(() => {
     supabase.auth
@@ -47,7 +51,10 @@ export default function App() {
           return
         }
         return fetchMe()
-          .then((me) => setSesi({ me, loading: false }))
+          .then((me) => {
+            setSesi({ me, loading: false })
+            setShowWelcome(true)
+          })
           .catch(() => {
             supabase.auth.signOut()
             setSesi({ me: null, loading: false })
@@ -60,7 +67,12 @@ export default function App() {
     await logoutSiswa()
     clearAllCache()
     setSesi({ me: null, loading: false })
+    setShowWelcome(false)
     setTab('dashboard')
+  }
+
+  if (showSplash) {
+    return <SplashScreen onFinish={() => setShowSplash(false)} />
   }
 
   if (sesi.loading) {
@@ -70,9 +82,17 @@ export default function App() {
   if (!sesi.me) {
     return (
       <LoginScreen
-        onSuccess={(me: Me) => setSesi({ me, loading: false })}
+        onSuccess={(me: Me) => {
+          setSesi({ me, loading: false })
+          setShowWelcome(true)
+        }}
       />
     )
+  }
+
+  if (showWelcome) {
+    const welcomeLabel = [sesi.me.kelas.nama_kelas, sesi.me.kelas.tahun_ajaran].filter(Boolean).join(' · ')
+    return <WelcomeScreen nama={sesi.me.siswa.nama_lengkap ?? 'Siswa'} kelasLabel={welcomeLabel} onMasuk={() => setShowWelcome(false)} onLogout={handleLogout} />
   }
 
   const me = sesi.me
