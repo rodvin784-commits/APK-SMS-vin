@@ -3,6 +3,10 @@ import { downloadMateri, fetchMateri } from '../lib/api'
 import type { MateriItem } from '../lib/types'
 import { formatTanggal, mapErrorMessage } from '../lib/format'
 import { cacheMateri, getCachedMateri } from '../lib/cache'
+import { Card, CardHead, CardMeta, CardDesc, CardActions } from '../components/ui/Card'
+import Alert from '../components/ui/Alert'
+import Loading from '../components/ui/Loading'
+import Button from '../components/ui/Button'
 
 export default function MateriScreen() {
   const [materi, setMateri] = useState<MateriItem[]>([])
@@ -37,12 +41,12 @@ export default function MateriScreen() {
     setMuatUlang((k) => k + 1)
   }
 
-  if (loading) return <div className="loading">Memuat materi...</div>
+  if (loading) return <Loading message="Memuat materi..." />
   if (error) {
     return (
       <div className="screen">
-        <div className="alert alert-error">{error}</div>
-        <button className="btn-primary" onClick={muat}>Coba lagi</button>
+        <Alert variant="error">{error}</Alert>
+        <Button onClick={muat}>Coba lagi</Button>
       </div>
     )
   }
@@ -53,16 +57,14 @@ export default function MateriScreen() {
         <p className="kosong">Belum ada materi.</p>
       ) : (
         materi.map((m) => (
-          <div key={m.id} className="item-card">
-            <div className="item-head">
-              <strong>{m.judul}</strong>
-            </div>
-            <span className="item-meta">{m.mapel_nama} · {m.guru_nama}</span>
-            {m.deskripsi && <p className="item-desc">{m.deskripsi}</p>}
-            <div className="item-actions">
+          <Card key={m.id}>
+            <CardHead><strong>{m.judul}</strong></CardHead>
+            <CardMeta>{m.mapel_nama} · {m.guru_nama}</CardMeta>
+            {m.deskripsi && <CardDesc>{m.deskripsi}</CardDesc>}
+            <CardActions>
               {m.file_url ? (
-                <button
-                  className="btn-secondary"
+                <Button
+                  variant="secondary"
                   onClick={async () => {
                     try {
                       const { url } = await downloadMateri(m.id)
@@ -73,13 +75,13 @@ export default function MateriScreen() {
                   }}
                 >
                   ⬇ {m.nama_file ?? 'Unduh file'}
-                </button>
+                </Button>
               ) : (
                 <span className="item-meta">Tanpa file</span>
               )}
               <small className="item-tanggal">{formatTanggal(m.created_at)}</small>
-            </div>
-          </div>
+            </CardActions>
+          </Card>
         ))
       )}
     </div>
