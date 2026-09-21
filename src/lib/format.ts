@@ -77,3 +77,16 @@ export function statusLabel(status: string | null): string {
       return 'Belum dikumpulkan'
   }
 }
+
+export function toTitleCase(value: string | null | undefined): string {
+  if (!value) return ''
+  return value
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .map((w) => w.split('-').map((p) => (p ? p[0].toUpperCase() + p.slice(1) : '')).join('-'))
+    .join(' ')
+    .split("'")
+    .map((p, i) => (i === 0 ? p : p ? p[0].toUpperCase() + p.slice(1) : ''))
+    .join("'")
+}

@@ -20,6 +20,7 @@ import { usePollingNotifikasi } from './hooks/usePollingNotifikasi'
 import Loading from './components/ui/Loading'
 import SplashScreen from './components/layout/SplashScreen'
 import WelcomeScreen from './screens/WelcomeScreen'
+import { toTitleCase } from './lib/format'
 
 interface Sesi {
   me: Me | null
@@ -92,7 +93,7 @@ export default function App() {
 
   if (showWelcome) {
     const welcomeLabel = [sesi.me.kelas.nama_kelas, sesi.me.kelas.tahun_ajaran].filter(Boolean).join(' · ')
-    return <WelcomeScreen nama={sesi.me.siswa.nama_lengkap ?? 'Siswa'} kelasLabel={welcomeLabel} onMasuk={() => setShowWelcome(false)} />
+    return <WelcomeScreen nama={toTitleCase(sesi.me.siswa.nama_lengkap ?? 'Siswa')} kelasLabel={welcomeLabel} onMasuk={() => setShowWelcome(false)} />
   }
 
   const me = sesi.me
@@ -102,12 +103,12 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <AppHeader unreadCount={unreadCount} darkMode={darkMode} userName={me.siswa.nama_lengkap ?? ''} onToggleDark={() => setDarkMode((v) => !v)} onOpenNotifikasi={() => setTab('notifikasi')} onLogout={handleLogout} />
+      <AppHeader unreadCount={unreadCount} darkMode={darkMode} userName={toTitleCase(me.siswa.nama_lengkap ?? '')} onToggleDark={() => setDarkMode((v) => !v)} onOpenNotifikasi={() => setTab('notifikasi')} onLogout={handleLogout} />
 
       <main className="app-main-new">
         {tab === 'dashboard' && (
           <DashboardScreen
-            nama={me.siswa.nama_lengkap ?? 'Siswa'}
+            nama={toTitleCase(me.siswa.nama_lengkap ?? 'Siswa')}
             kelas={kelasLabel}
             onOpenTugas={() => setTab('tugas')}
             onOpenNotifikasi={() => setTab('notifikasi')}

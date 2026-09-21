@@ -5,6 +5,7 @@ import { formatTanggal, formatJam, mapErrorMessage } from '../lib/format'
 import Loading from '../components/ui/Loading'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
+import { toTitleCase } from '../lib/format'
 import {
   MdAssignment,
   MdBook,
@@ -106,7 +107,7 @@ export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenNotifi
       <div className="greeting-container">
         <div className="greeting-left">
           <p className="greeting-text">{ucapan},</p>
-          <h2 className="user-name">{nama} 👋</h2>
+          <h2 className="user-name">{toTitleCase(nama)} 👋</h2>
           <p className="welcome-text">Selamat datang di Portal Siswa</p>
         </div>
         <div className="date-container">
@@ -119,7 +120,7 @@ export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenNotifi
       <div className="hero-banner">
         <div className="hero-text">
           <span className="hero-subtitle">{kelas}</span>
-          <h3 className="hero-title">{nama}</h3>
+          <h3 className="hero-title">{toTitleCase(nama)}</h3>
           <p className="hero-desc">Terus belajar, terus berkembang,{'\n'}raih masa depan yang lebih baik.</p>
         </div>
         <MdSchool size={60} color="#fff" className="hero-icon" />

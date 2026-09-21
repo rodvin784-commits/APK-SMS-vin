@@ -1,6 +1,7 @@
 import logo from '../assets/logo-bn.png'
 import Button from '../components/ui/Button'
 import { MdVerified, MdSchool, MdAssignment, MdPlayCircleOutline } from 'react-icons/md'
+import { toTitleCase } from '../lib/format'
 
 interface Props {
   nama: string
@@ -17,7 +18,7 @@ export default function WelcomeScreen({ nama, kelasLabel, onMasuk }: Props) {
         </div>
         <img src={logo} alt="Logo" className="welcome-logo" />
         <p className="welcome-hello">Selamat Datang Kembali</p>
-        <h1 className="welcome-name">{nama}</h1>
+        <h1 className="welcome-name">{toTitleCase(nama)}</h1>
         <p className="welcome-kelas">{kelasLabel || 'Portal Siswa'}</p>
         <p className="welcome-desc">Akses tugas, materi, video & nilai dalam satu genggaman — tetap semangat belajar!</p>
 
