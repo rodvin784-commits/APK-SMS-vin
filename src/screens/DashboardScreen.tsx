@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { fetchDashboard } from '../lib/api'
 import type { DashboardData } from '../lib/types'
 import { formatTanggal, formatJam, mapErrorMessage } from '../lib/format'
+import Loading from '../components/ui/Loading'
+import Alert from '../components/ui/Alert'
+import Button from '../components/ui/Button'
 import {
   MdAssignment,
   MdBook,
@@ -87,12 +90,11 @@ export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenNotifi
     init()
   }, [muatUlang])
 
-  if (loading) return <div className="loading">Memuat dashboard...</div>
+  if (loading) return <Loading message="Memuat dashboard..." />
   if (error) {
     return (
       <div className="screen">
-        <div className="alert alert-error">{error}</div>
-        <button className="btn-primary" onClick={muat}>Coba lagi</button>
+        <Alert variant="error" action={<Button onClick={muat}>Coba lagi</Button>}>{error}</Alert>
       </div>
     )
   }

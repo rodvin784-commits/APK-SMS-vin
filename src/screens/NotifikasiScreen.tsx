@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react'
 import { fetchNotifikasi, tandaiNotifikasiDibaca } from '../lib/api'
 import type { NotifikasiItem } from '../lib/types'
 import { formatTanggalJam, mapErrorMessage } from '../lib/format'
+import Loading from '../components/ui/Loading'
+import Alert from '../components/ui/Alert'
+import Button from '../components/ui/Button'
+import EmptyState from '../components/ui/EmptyState'
+import { MdNotificationsNone } from 'react-icons/md'
 
-interface Props {
-  onCountChange?: (count: number) => void
-}
+interface Props { onCountChange?: (count: number) => void }
 
 export default function NotifikasiScreen({ onCountChange }: Props) {
   const [items, setItems] = useState<NotifikasiItem[]>([])
@@ -46,28 +49,19 @@ export default function NotifikasiScreen({ onCountChange }: Props) {
     }
   }
 
-  if (loading) return <div className="loading">Memuat notifikasi...</div>
+  if (loading) return <Loading message="Memuat notifikasi..." />
 
   return (
     <div className="screen">
       <div className="screen-toolbar">
-        <span className="item-meta">
-          {items.filter((n) => !n.is_read).length} belum dibaca
-        </span>
-        <button className="btn-secondary" onClick={tandaiSemua}>
-          ✓ Tandai semua
-        </button>
+        <span className="item-meta">{items.filter((n) => !n.is_read).length} belum dibaca</span>
+        <Button variant="secondary" onClick={tandaiSemua}>✓ Tandai semua dibaca</Button>
       </div>
 
-      {error && (
-        <div className="alert alert-error">
-          {error}
-          <button className="btn-primary" onClick={muat} style={{ marginLeft: '1rem' }}>Coba lagi</button>
-        </div>
-      )}
+      {error && <Alert variant="error" action={<Button variant="secondary" onClick={muat}>Coba lagi</Button>}>{error}</Alert>}
 
       {items.length === 0 ? (
-        <p className="kosong">Belum ada notifikasi.</p>
+        <EmptyState message="Belum ada notifikasi." icon={<MdNotificationsNone size={42} color="#cbd5e1" />} />
       ) : (
         items.map((n) => (
           <div key={n.id} className={`item-card ${n.is_read ? 'notif-read' : 'notif-unread'}`}>

@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react'
 import { fetchPengumuman } from '../lib/api'
 import type { PengumumanItem } from '../lib/types'
 import { formatTanggal, mapErrorMessage } from '../lib/format'
+import Loading from '../components/ui/Loading'
+import Alert from '../components/ui/Alert'
+import Button from '../components/ui/Button'
+import EmptyState from '../components/ui/EmptyState'
+import { MdCampaign } from 'react-icons/md'
 
 export default function PengumumanScreen() {
   const [items, setItems] = useState<PengumumanItem[]>([])
@@ -29,32 +34,27 @@ export default function PengumumanScreen() {
     setMuatUlang((k) => k + 1)
   }
 
-  if (loading) return <div className="loading">Memuat pengumuman...</div>
+  if (loading) return <Loading message="Memuat pengumuman..." />
   if (error) {
     return (
       <div className="screen">
-        <div className="alert alert-error">{error}</div>
-        <button className="btn-primary" onClick={muat}>Coba lagi</button>
+        <Alert variant="error" action={<Button variant="secondary" onClick={muat}>Coba lagi</Button>}>{error}</Alert>
       </div>
     )
   }
 
+  if (items.length === 0) return <div className="screen"><EmptyState message="Belum ada pengumuman." icon={<MdCampaign size={42} color="#cbd5e1" />} /></div>
+
   return (
     <div className="screen">
-      {items.length === 0 ? (
-        <p className="kosong">Belum ada pengumuman.</p>
-      ) : (
-        items.map((p) => (
-          <div key={p.id} className="item-card">
-            <div className="item-head">
-              <strong>{p.judul}</strong>
-            </div>
-            <span className="item-meta">{p.guru_nama}</span>
-            <p className="item-desc">{p.isi}</p>
-            <small className="item-tanggal">{formatTanggal(p.created_at)}</small>
-          </div>
-        ))
-      )}
+      {items.map((p) => (
+        <div key={p.id} className="item-card">
+          <div className="item-head"><strong>{p.judul}</strong></div>
+          <span className="item-meta">{p.guru_nama}</span>
+          <p className="item-desc">{p.isi}</p>
+          <small className="item-tanggal">{formatTanggal(p.created_at)}</small>
+        </div>
+      ))}
     </div>
   )
 }

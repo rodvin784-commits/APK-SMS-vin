@@ -1,26 +1,44 @@
-/* Reset template default agar tampilan mobile bersih. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
 
-:root {
-  font: 15px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
-  color: #0f172a;
-  background: #f1f5f9;
-  -webkit-font-smoothing: antialiased;
+:root{
+  --bg:#f8fafc;
+  --surface:#ffffff;
+  --surface-2:#f1f5f9;
+  --text:#0f172a;
+  --text-2:#475569;
+  --text-3:#94a3b8;
+  --border:#e2e8f0;
+  --border-2:#f1f5f9;
+  --primary:#0f172a;
+  --primary-hover:#1e293b;
+  --accent:#0284c7;
+  --accent-soft:#e0f2fe;
+  --radius:16px;
+  --radius-lg:20px;
+  --radius-sm:12px;
+  --shadow-sm:0 1px 3px rgba(15,23,42,.08);
+  --shadow:0 8px 24px rgba(15,23,42,.08);
+  --shadow-lg:0 24px 48px rgba(2,132,199,.14);
+  font:15px/1.5 'Inter', system-ui, -apple-system, sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
 }
-
-[data-theme='dark'] {
-  color: #e2e8f0;
-  background: #0f172a;
+*{ -webkit-tap-highlight-color:transparent; }
+[data-theme='dark']{
+  --bg:#0b1220;
+  --surface:#132033;
+  --surface-2:#0f1a2e;
+  --text:#f1f5f9;
+  --text-2:#94a3b8;
+  --text-3:#64748b;
+  --border:#1e2f4a;
+  --border-2:#162a46;
+  background:var(--bg);
+  color:var(--text);
 }
-
-body {
-  margin: 0;
-  background: inherit;
-}
-[data-theme='dark'] body { background: #0f172a; }
-
-h1,
-h2,
-h3 {
-  font-family: inherit;
-  color: inherit;
-}
+body{ margin:0; background:inherit; }
+h1,h2,h3{ font-family:'Plus Jakarta Sans','Inter',sans-serif; color:inherit; letter-spacing:-.02em; }
+*::-webkit-scrollbar{ display:none; }
+*{ scrollbar-width:none; }
