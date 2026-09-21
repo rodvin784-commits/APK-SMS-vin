@@ -5,10 +5,9 @@ interface Props {
   nama: string
   kelasLabel: string
   onMasuk: () => void
-  onLogout: () => void
 }
 
-export default function WelcomeScreen({ nama, kelasLabel, onMasuk, onLogout }: Props) {
+export default function WelcomeScreen({ nama, kelasLabel, onMasuk }: Props) {
   return (
     <div className="welcome-screen">
       <div className="welcome-card">
@@ -20,9 +19,6 @@ export default function WelcomeScreen({ nama, kelasLabel, onMasuk, onLogout }: P
         <Button onClick={onMasuk} style={{ marginTop: '18px' }}>
           Masuk ke Portal →
         </Button>
-        <button className="welcome-logout" onClick={onLogout}>
-          Keluar akun lain
-        </button>
       </div>
     </div>
   )

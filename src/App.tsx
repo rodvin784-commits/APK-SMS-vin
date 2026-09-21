@@ -92,7 +92,7 @@ export default function App() {
 
   if (showWelcome) {
     const welcomeLabel = [sesi.me.kelas.nama_kelas, sesi.me.kelas.tahun_ajaran].filter(Boolean).join(' · ')
-    return <WelcomeScreen nama={sesi.me.siswa.nama_lengkap ?? 'Siswa'} kelasLabel={welcomeLabel} onMasuk={() => setShowWelcome(false)} onLogout={handleLogout} />
+    return <WelcomeScreen nama={sesi.me.siswa.nama_lengkap ?? 'Siswa'} kelasLabel={welcomeLabel} onMasuk={() => setShowWelcome(false)} />
   }
 
   const me = sesi.me
