@@ -10,7 +10,7 @@ interface Props {
   onFinish: () => void // dipanggil App.tsx untuk sembunyikan splash
 }
 
-const DURATION = 2100 // ms — total durasi splash sebelum hilang
+const DURATION = 1400 // ms — dipercepat dari 2100 agar render terasa sat-set, tetap animasi halus (tidak kurangi UX)
 
 export default function SplashScreen({ onFinish }: Props) {
   const [out, setOut] = useState(false)
@@ -77,7 +77,7 @@ const splashCss = `
   border-radius:50%;
   border:1.5px solid rgba(2,132,199,.14);
   box-shadow:0 0 0 14px rgba(2,132,199,.06), 0 0 0 28px rgba(2,132,199,.03);
-  animation: splashRing 2.1s ease forwards;
+  animation: splashRing 1.4s ease forwards;
 }
 .splash-logo-wrapper::before{
   content:'';
@@ -87,7 +87,7 @@ const splashCss = `
   background:rgba(255,255,255,.92);
   filter:blur(22px);
   z-index:1;
-  animation: splashGlow 2.1s ease forwards;
+  animation: splashGlow 1.4s ease forwards;
 }
 .splash-logo-container{
   position:relative;
@@ -99,7 +99,7 @@ const splashCss = `
   border:1px solid rgba(186,230,253,.9);
   box-shadow:0 12px 32px rgba(2,132,199,.18), 0 1px 0 rgba(255,255,255,1) inset;
   overflow:hidden;
-  animation: splashZoom 2.1s cubic-bezier(.16,1,.3,1) forwards;
+  animation: splashZoom 1.4s cubic-bezier(.16,1,.3,1) forwards;
 }
 .splash-logo-container img{
   width:86%; height:86%;
@@ -113,9 +113,9 @@ const splashCss = `
   width:42%; height:200%;
   background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,.75) 50%, rgba(255,255,255,0) 100%);
   transform: rotate(22deg);
-  animation: splashShine 2.1s ease forwards;
+  animation: splashShine 1.4s ease forwards;
 }
-.splash-text{ margin-top:22px; text-align:center; opacity:0; animation: splashTextIn .55s 1.58s both cubic-bezier(.16,1,.3,1); }
+.splash-text{ margin-top:22px; text-align:center; opacity:0; animation: splashTextIn .45s .9s both cubic-bezier(.16,1,.3,1); }
 .splash-title{
   font-family:'Plus Jakarta Sans','Inter',sans-serif;
   font-size:20px; font-weight:800; color:#0f172a;
@@ -126,7 +126,7 @@ const splashCss = `
   letter-spacing:.5px; text-transform:uppercase;
   margin:6px 0 0; opacity:.85;
 }
-.splash-loader{ display:flex; gap:6px; margin-top:18px; opacity:0; animation: splashLoaderIn .45s 1.72s both ease; }
+.splash-loader{ display:flex; gap:6px; margin-top:18px; opacity:0; animation: splashLoaderIn .35s 1.05s both ease; }
 .splash-dot{
   width:6px; height:6px; border-radius:50%; background:#0284c7;
   opacity:.9; animation: splashDot 1s infinite;

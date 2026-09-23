@@ -18,14 +18,14 @@ interface TabDef {
 }
 
 export const TABS: TabDef[] = [
-  { id: 'dashboard', icon: (a) => <MdHome size={24} color={a ? '#2196F3' : '#9CA3AF'} />, label: 'Home' },
-  { id: 'tugas', icon: (a) => <MdOutlineAssignment size={24} color={a ? '#2196F3' : '#9CA3AF'} />, label: 'Tugas' },
-  { id: 'materi', icon: (a) => <MdBook size={24} color={a ? '#2196F3' : '#9CA3AF'} />, label: 'Materi' },
-  { id: 'video', icon: (a) => <MdPlayCircleOutline size={24} color={a ? '#2196F3' : '#9CA3AF'} />, label: 'Video' },
-  { id: 'pengumuman', icon: (a) => <MdInfoOutline size={24} color={a ? '#2196F3' : '#9CA3AF'} />, label: 'Info' },
-  { id: 'jadwal', icon: (a) => <MdOutlineCalendarMonth size={24} color={a ? '#2196F3' : '#9CA3AF'} />, label: 'Jadwal' },
-  { id: 'nilai', icon: (a) => <MdEmojiEvents size={24} color={a ? '#2196F3' : '#9CA3AF'} />, label: 'Nilai' },
-  { id: 'notifikasi', icon: (a) => <MdNotificationsNone size={24} color={a ? '#2196F3' : '#9CA3AF'} />, label: 'Notif' },
+  { id: 'dashboard', icon: (a) => <MdHome size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Home' },
+  { id: 'tugas', icon: (a) => <MdOutlineAssignment size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Tugas' },
+  { id: 'materi', icon: (a) => <MdBook size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Materi' },
+  { id: 'video', icon: (a) => <MdPlayCircleOutline size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Video' },
+  { id: 'pengumuman', icon: (a) => <MdInfoOutline size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Info' },
+  { id: 'jadwal', icon: (a) => <MdOutlineCalendarMonth size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Jadwal' },
+  { id: 'nilai', icon: (a) => <MdEmojiEvents size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Nilai' },
+  { id: 'notifikasi', icon: (a) => <MdNotificationsNone size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Notif' },
 ]
 
 interface Props {

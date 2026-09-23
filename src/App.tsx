@@ -1,18 +1,10 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import './App.css'
 import { supabase } from './lib/supabase'
 import { fetchMe, logoutSiswa } from './lib/api'
 import type { Me } from './lib/types'
 import { clearAllCache } from './lib/cache'
 import LoginScreen from './screens/LoginScreen'
-import DashboardScreen from './screens/DashboardScreen'
-import TugasScreen from './screens/TugasScreen'
-import MateriScreen from './screens/MateriScreen'
-import VideoScreen from './screens/VideoScreen'
-import PengumumanScreen from './screens/PengumumanScreen'
-import JadwalScreen from './screens/JadwalScreen'
-import NilaiScreen from './screens/NilaiScreen'
-import NotifikasiScreen from './screens/NotifikasiScreen'
 import AppHeader from './components/layout/AppHeader'
 import BottomNav from './components/layout/BottomNav'
 import type { Tab } from './components/layout/BottomNav'
@@ -21,6 +13,16 @@ import Loading from './components/ui/Loading'
 import SplashScreen from './components/layout/SplashScreen'
 import WelcomeScreen from './screens/WelcomeScreen'
 import { toTitleCase } from './lib/format'
+
+// Lazy screens — hanya load saat tab dibuka, initial bundle jadi ringan (minimalis, tidak kurangi UX)
+const DashboardScreen = lazy(() => import('./screens/DashboardScreen'))
+const TugasScreen = lazy(() => import('./screens/TugasScreen'))
+const MateriScreen = lazy(() => import('./screens/MateriScreen'))
+const VideoScreen = lazy(() => import('./screens/VideoScreen'))
+const PengumumanScreen = lazy(() => import('./screens/PengumumanScreen'))
+const JadwalScreen = lazy(() => import('./screens/JadwalScreen'))
+const NilaiScreen = lazy(() => import('./screens/NilaiScreen'))
+const NotifikasiScreen = lazy(() => import('./screens/NotifikasiScreen'))
 
 interface Sesi {
   me: Me | null
@@ -114,23 +116,25 @@ export default function App() {
       <AppHeader unreadCount={unreadCount} darkMode={darkMode} userName={toTitleCase(me.siswa.nama_lengkap ?? '')} onToggleDark={() => setDarkMode((v) => !v)} onOpenNotifikasi={() => setTab('notifikasi')} onLogout={handleLogout} />
 
       <main className="app-main-new">
-        {tab === 'dashboard' && (
-          <DashboardScreen
-            nama={toTitleCase(me.siswa.nama_lengkap ?? 'Siswa')}
-            kelas={kelasLabel}
-            onOpenTugas={() => setTab('tugas')}
-            onOpenMateri={() => setTab('materi')}
-            onOpenVideo={() => setTab('video')}
-            onOpenNotifikasi={() => setTab('notifikasi')}
-          />
-        )}
-        {tab === 'tugas' && <TugasScreen />}
-        {tab === 'materi' && <MateriScreen />}
-        {tab === 'video' && <VideoScreen />}
-        {tab === 'pengumuman' && <PengumumanScreen />}
-        {tab === 'jadwal' && <JadwalScreen />}
-        {tab === 'nilai' && <NilaiScreen />}
-        {tab === 'notifikasi' && <NotifikasiScreen onCountChange={setUnreadCount} />}
+        <Suspense fallback={<Loading message="Memuat..." />}>
+          {tab === 'dashboard' && (
+            <DashboardScreen
+              nama={toTitleCase(me.siswa.nama_lengkap ?? 'Siswa')}
+              kelas={kelasLabel}
+              onOpenTugas={() => setTab('tugas')}
+              onOpenMateri={() => setTab('materi')}
+              onOpenVideo={() => setTab('video')}
+              onOpenNotifikasi={() => setTab('notifikasi')}
+            />
+          )}
+          {tab === 'tugas' && <TugasScreen />}
+          {tab === 'materi' && <MateriScreen />}
+          {tab === 'video' && <VideoScreen />}
+          {tab === 'pengumuman' && <PengumumanScreen />}
+          {tab === 'jadwal' && <JadwalScreen />}
+          {tab === 'nilai' && <NilaiScreen />}
+          {tab === 'notifikasi' && <NotifikasiScreen onCountChange={setUnreadCount} />}
+        </Suspense>
       </main>
 
       <BottomNav activeTab={tab} unreadCount={unreadCount} onChange={setTab} />
