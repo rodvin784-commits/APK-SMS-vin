@@ -50,6 +50,20 @@ export default function App() {
 
   const { unreadCount, setUnreadCount } = usePollingNotifikasi(!!sesi.me && !showWelcome && !showSplash)
 
+  // Prefetch tab lain saat idle agar perpindahan terasa instant (tidak tunggu download chunk)
+  useEffect(() => {
+    if (!sesi.me || showWelcome || showSplash) return
+    const idle = (cb: () => void) => {
+      if ('requestIdleCallback' in window) (window as unknown as { requestIdleCallback: (cb: () => void) => number }).requestIdleCallback(cb)
+      else setTimeout(cb, 1200)
+    }
+    idle(() => {
+      void import('./screens/TugasScreen')
+      void import('./screens/MateriScreen')
+      void import('./screens/JadwalScreen')
+    })
+  }, [sesi.me, showWelcome, showSplash])
+
   useEffect(() => {
     supabase.auth
       .getSession()
@@ -117,7 +131,8 @@ export default function App() {
 
       <main className="app-main-new">
         <Suspense fallback={<Loading message="Memuat..." />}>
-          {tab === 'dashboard' && (
+          {/* Keep-alive: semua tab tetap mounted agar perpindahan instant, hanya hide via display */}
+          <div style={{ display: tab === 'dashboard' ? 'block' : 'none' }}>
             <DashboardScreen
               nama={toTitleCase(me.siswa.nama_lengkap ?? 'Siswa')}
               kelas={kelasLabel}
@@ -126,14 +141,14 @@ export default function App() {
               onOpenVideo={() => setTab('video')}
               onOpenNotifikasi={() => setTab('notifikasi')}
             />
-          )}
-          {tab === 'tugas' && <TugasScreen />}
-          {tab === 'materi' && <MateriScreen />}
-          {tab === 'video' && <VideoScreen />}
-          {tab === 'pengumuman' && <PengumumanScreen />}
-          {tab === 'jadwal' && <JadwalScreen />}
-          {tab === 'nilai' && <NilaiScreen />}
-          {tab === 'notifikasi' && <NotifikasiScreen onCountChange={setUnreadCount} />}
+          </div>
+          <div style={{ display: tab === 'tugas' ? 'block' : 'none' }}><TugasScreen /></div>
+          <div style={{ display: tab === 'materi' ? 'block' : 'none' }}><MateriScreen /></div>
+          <div style={{ display: tab === 'video' ? 'block' : 'none' }}><VideoScreen /></div>
+          <div style={{ display: tab === 'pengumuman' ? 'block' : 'none' }}><PengumumanScreen /></div>
+          <div style={{ display: tab === 'jadwal' ? 'block' : 'none' }}><JadwalScreen /></div>
+          <div style={{ display: tab === 'nilai' ? 'block' : 'none' }}><NilaiScreen /></div>
+          <div style={{ display: tab === 'notifikasi' ? 'block' : 'none' }}><NotifikasiScreen onCountChange={setUnreadCount} /></div>
         </Suspense>
       </main>
 

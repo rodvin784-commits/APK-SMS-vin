@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { fetchDashboard } from '../lib/api'
 import type { DashboardData } from '../lib/types'
 import { formatTanggal, formatJam, mapErrorMessage } from '../lib/format'
+import { cacheDashboard, getCachedDashboard } from '../lib/cache'
 import Loading from '../components/ui/Loading'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
@@ -67,8 +68,8 @@ interface Props {
 }
 
 export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenMateri, onOpenVideo, onOpenNotifikasi }: Props) {
-  const [data, setData] = useState<DashboardData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState<DashboardData | null>(() => getCachedDashboard())
+  const [loading, setLoading] = useState(() => !getCachedDashboard())
   const [error, setError] = useState<string | null>(null)
   const [muatUlang, setMuatUlang] = useState(0)
   const ucapan = useMemo(() => ucapanSelamat(), [])
@@ -82,7 +83,8 @@ export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenMateri
   }, [])
 
   const muat = () => {
-    setLoading(true)
+    setError(null)
+    if (!data) setLoading(true)
     setMuatUlang((k) => k + 1)
   }
 
@@ -91,18 +93,20 @@ export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenMateri
       try {
         const d = await fetchDashboard()
         setData(d)
+        cacheDashboard(d)
         setError(null)
       } catch (err) {
-        setError(mapErrorMessage(err))
+        if (!data) setError(mapErrorMessage(err))
       } finally {
         setLoading(false)
       }
     }
     init()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [muatUlang])
 
   if (loading) return <Loading message="Memuat dashboard..." />
-  if (error) {
+  if (error && !data) {
     return (
       <div className="screen">
         <Alert variant="error" action={<Button onClick={muat}>Coba lagi</Button>}>{error}</Alert>

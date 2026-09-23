@@ -1,4 +1,4 @@
-import type { TugasItem, MateriItem, JadwalItem } from './types'
+import type { TugasItem, MateriItem, JadwalItem, DashboardData, VideoItem, PengumumanItem, NilaiItem } from './types'
 
 const CACHE_PREFIX = 'siswa_cache_'
 const CACHE_EXPIRY_MS = 5 * 60 * 1000 // 5 menit
@@ -66,4 +66,32 @@ export function cacheJadwal(data: JadwalItem[]): void {
 
 export function getCachedJadwal(): JadwalItem[] | null {
   return getCache<JadwalItem[]>('jadwal')
+}
+
+// Dashboard — cache ringan agar perpindahan tab instant (stale-while-revalidate)
+export function cacheDashboard(data: DashboardData): void {
+  setCache('dashboard', data)
+}
+export function getCachedDashboard(): DashboardData | null {
+  return getCache<DashboardData>('dashboard')
+}
+
+// Video
+export function cacheVideo(data: VideoItem[]): void {
+  setCache('video', data)
+}
+export function getCachedVideo(): VideoItem[] | null {
+  return getCache<VideoItem[]>('video')
+}
+export function cachePengumuman(data: PengumumanItem[]): void {
+  setCache('pengumuman', data)
+}
+export function getCachedPengumuman(): PengumumanItem[] | null {
+  return getCache<PengumumanItem[]>('pengumuman')
+}
+export function cacheNilai(data: NilaiItem[]): void {
+  setCache('nilai', data)
+}
+export function getCachedNilai(): NilaiItem[] | null {
+  return getCache<NilaiItem[]>('nilai')
 }
