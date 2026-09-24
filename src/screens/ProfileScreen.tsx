@@ -11,6 +11,9 @@ import { API_BASE_URL } from '../lib/env'
 
 export default function ProfileScreen({ me }: { me: Me }) {
   const jurusan = me.kelas.jurusan_nama ? `${me.kelas.jurusan_kode ?? ''} - ${me.kelas.jurusan_nama}` : 'Tanpa Jurusan'
+  const [editNama, setEditNama] = useState(me.siswa.nama_lengkap ?? '')
+  const [savingNama, setSavingNama] = useState(false)
+  const [msgNama, setMsgNama] = useState<{type:'success'|'error', text:string}|null>(null)
   const [curr, setCurr] = useState('')
   const [next, setNext] = useState('')
   const [msg, setMsg] = useState<{type:'success'|'error', text:string}|null>(null)
@@ -27,6 +30,18 @@ export default function ProfileScreen({ me }: { me: Me }) {
       if(j){ setUsed(j.used ?? 0); setRemaining(j.remaining ?? 1)}
     })()
   },[])
+  const submitNama = async (e: React.FormEvent)=>{
+    e.preventDefault()
+    setSavingNama(true); setMsgNama(null)
+    const { data:{session}} = await supabase.auth.getSession()
+    const token=session?.access_token
+    if(!token){ setMsgNama({type:'error', text:'Sesi habis'}); setSavingNama(false); return}
+    const r=await fetch(`${API_BASE_URL}/api/profile/update`, {method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`}, body: JSON.stringify({nama_lengkap: editNama})})
+    const j=await r.json().catch(()=>null)
+    if(r.ok){ setMsgNama({type:'success', text: j.message}); }
+    else setMsgNama({type:'error', text: j?.error ?? 'Gagal'})
+    setSavingNama(false)
+  }
   const submit = async (e: React.FormEvent)=>{
     e.preventDefault()
     setSaving(true); setMsg(null)
@@ -58,6 +73,14 @@ export default function ProfileScreen({ me }: { me: Me }) {
           <div className="item-card" style={{ margin: 0 }}><strong>Email</strong><div className="item-meta">{me.siswa.email ?? '-'}</div></div>
         </div>
         <p style={{ fontSize: 12, color: '#64748b', marginTop: 12, textAlign: 'center' }}>Edit data? Hubungi admin sekolah.</p>
+      </Card>
+      <Card>
+        <h3 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 800 }}>Ubah Nama Profil</h3>
+        {msgNama && <div style={{ padding: '8px 12px', borderRadius: 12, fontSize: 13, marginBottom: 8, background: msgNama.type==='success'?'#ecfdf5':'#fff1f2', color: msgNama.type==='success'?'#065f46':'#9f1239'}}>{msgNama.text}</div>}
+        <form onSubmit={submitNama} style={{ display:'grid', gap: 8 }}>
+          <input type="text" placeholder="Nama lengkap" value={editNama} onChange={e=>setEditNama(e.target.value)} required style={{ padding:'10px 12px', borderRadius:12, border:'1px solid #e2e8f0', background:'#f8fafc', fontSize:13 }} />
+          <button type="submit" disabled={savingNama} style={{ padding:'10px', borderRadius:12, background:'#059669', color:'white', fontWeight:700, fontSize:13, opacity: savingNama?0.5:1 }}>{savingNama?'Menyimpan...':'Simpan Nama'}</button>
+        </form>
       </Card>
       <Card>
         <h3 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 800 }}>Ganti Sandi (1x)</h3>
