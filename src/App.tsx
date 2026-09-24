@@ -23,6 +23,7 @@ const PengumumanScreen = lazy(() => import('./screens/PengumumanScreen'))
 const JadwalScreen = lazy(() => import('./screens/JadwalScreen'))
 const NilaiScreen = lazy(() => import('./screens/NilaiScreen'))
 const PresensiScreen = lazy(() => import('./screens/PresensiScreen'))
+const ProfileScreen = lazy(() => import('./screens/ProfileScreen'))
 const NotifikasiScreen = lazy(() => import('./screens/NotifikasiScreen'))
 
 interface Sesi {
@@ -40,6 +41,7 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('dashboard')
   const [showSplash, setShowSplash] = useState(true)
   const [showWelcome, setShowWelcome] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
   const [darkMode, setDarkMode] = useState(() => {
     try { return localStorage.getItem('siswa_dark') === '1' } catch { return false }
   })
@@ -130,29 +132,38 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <AppHeader unreadCount={unreadCount} darkMode={darkMode} userName={toTitleCase(me.siswa.nama_lengkap ?? '')} onToggleDark={() => setDarkMode((v) => !v)} onOpenNotifikasi={() => setTab('notifikasi')} onLogout={handleLogout} />
+      <AppHeader unreadCount={unreadCount} darkMode={darkMode} userName={toTitleCase(me.siswa.nama_lengkap ?? '')} onToggleDark={() => setDarkMode((v) => !v)} onOpenNotifikasi={() => { setShowProfile(false); setTab('notifikasi') }} onOpenProfile={() => setShowProfile(v=>!v)} onLogout={handleLogout} />
 
       <main className="app-main-new">
         <Suspense fallback={<Loading message="Memuat..." />}>
-          {/* P2: conditional render (unmount) untuk hemat memori + polling hanya tab aktif */}
-          {tab === 'dashboard' && (
-            <DashboardScreen
-              nama={toTitleCase(me.siswa.nama_lengkap ?? 'Siswa')}
-              kelas={kelasLabel}
-              onOpenTugas={() => setTab('tugas')}
-              onOpenMateri={() => setTab('materi')}
-              onOpenVideo={() => setTab('video')}
-              onOpenNotifikasi={() => setTab('notifikasi')}
-            />
+          {showProfile ? (
+            <div>
+              <button onClick={()=>setShowProfile(false)} className="btn-secondary" style={{marginBottom:12}}>← Kembali</button>
+              <ProfileScreen me={me} />
+            </div>
+          ) : (
+            <>
+              {/* P2: conditional render (unmount) untuk hemat memori + polling hanya tab aktif */}
+              {tab === 'dashboard' && (
+                <DashboardScreen
+                  nama={toTitleCase(me.siswa.nama_lengkap ?? 'Siswa')}
+                  kelas={kelasLabel}
+                  onOpenTugas={() => setTab('tugas')}
+                  onOpenMateri={() => setTab('materi')}
+                  onOpenVideo={() => setTab('video')}
+                  onOpenNotifikasi={() => setTab('notifikasi')}
+                />
+              )}
+              {tab === 'tugas' && <TugasScreen />}
+              {tab === 'materi' && <MateriScreen />}
+              {tab === 'video' && <VideoScreen />}
+              {tab === 'pengumuman' && <PengumumanScreen />}
+              {tab === 'jadwal' && <JadwalScreen />}
+              {tab === 'nilai' && <NilaiScreen />}
+              {tab === 'presensi' && <PresensiScreen />}
+              {tab === 'notifikasi' && <NotifikasiScreen onCountChange={setUnreadCount} />}
+            </>
           )}
-          {tab === 'tugas' && <TugasScreen />}
-          {tab === 'materi' && <MateriScreen />}
-          {tab === 'video' && <VideoScreen />}
-          {tab === 'pengumuman' && <PengumumanScreen />}
-          {tab === 'jadwal' && <JadwalScreen />}
-          {tab === 'nilai' && <NilaiScreen />}
-          {tab === 'presensi' && <PresensiScreen />}
-          {tab === 'notifikasi' && <NotifikasiScreen onCountChange={setUnreadCount} />}
         </Suspense>
       </main>
 

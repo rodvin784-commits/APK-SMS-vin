@@ -8,8 +8,8 @@ export interface KelasInfo {
 }
 
 export interface Me {
-  siswa: { id: string; nama_lengkap: string | null; nis: string | null }
-  kelas: KelasInfo
+  siswa: { id: string; nama_lengkap: string | null; nis: string | null; email: string | null; foto_url: string | null; status: boolean | null }
+  kelas: KelasInfo & { jurusan_nama: string | null; jurusan_kode: string | null }
 }
 
 export interface DashboardData {
