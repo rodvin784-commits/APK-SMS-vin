@@ -8,10 +8,19 @@ interface CacheEntry<T> {
   timestamp: number
 }
 
+function scopedKey(key: string): string {
+  try {
+    const uid = localStorage.getItem('siswa_uid') // di-set saat login
+    return uid ? `${CACHE_PREFIX}${uid}_${key}` : `${CACHE_PREFIX}${key}`
+  } catch {
+    return `${CACHE_PREFIX}${key}`
+  }
+}
+
 function setCache<T>(key: string, data: T): void {
   try {
     const entry: CacheEntry<T> = { data, timestamp: Date.now() }
-    localStorage.setItem(`${CACHE_PREFIX}${key}`, JSON.stringify(entry))
+    localStorage.setItem(scopedKey(key), JSON.stringify(entry))
   } catch {
     // localStorage penuh atau tidak tersedia, abaikan
   }
@@ -19,11 +28,11 @@ function setCache<T>(key: string, data: T): void {
 
 function getCache<T>(key: string): T | null {
   try {
-    const raw = localStorage.getItem(`${CACHE_PREFIX}${key}`)
+    const raw = localStorage.getItem(scopedKey(key))
     if (!raw) return null
     const entry: CacheEntry<T> = JSON.parse(raw)
     if (Date.now() - entry.timestamp > CACHE_EXPIRY_MS) {
-      localStorage.removeItem(`${CACHE_PREFIX}${key}`)
+      localStorage.removeItem(scopedKey(key))
       return null
     }
     return entry.data
@@ -32,13 +41,28 @@ function getCache<T>(key: string): T | null {
   }
 }
 
+export function setSiswaScope(uid: string): void {
+  try {
+    localStorage.setItem('siswa_uid', uid)
+  } catch {}
+}
+
 export function clearAllCache(): void {
   try {
     const keys = Object.keys(localStorage).filter((k) => k.startsWith(CACHE_PREFIX))
     keys.forEach((k) => localStorage.removeItem(k))
+    // jangan hapus siswa_uid di sini agar scope tetap, tapi clear saat logout full
   } catch {
     // abaikan
   }
+}
+
+export function clearAllCacheIncludingScope(): void {
+  try {
+    const keys = Object.keys(localStorage).filter((k) => k.startsWith(CACHE_PREFIX) || k === 'siswa_uid')
+    keys.forEach((k) => localStorage.removeItem(k))
+    localStorage.removeItem('siswa_uid')
+  } catch {}
 }
 
 // Tugas

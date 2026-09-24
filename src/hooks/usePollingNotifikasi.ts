@@ -28,10 +28,15 @@ export function usePollingNotifikasi(enabled: boolean) {
     requestNotificationPermission().finally(() => {
       if (!cancelled) poll()
     })
-    const interval = setInterval(poll, 60_000)
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') poll()
+    }, 60_000)
+    const onVis = () => { if (document.visibilityState === 'visible') poll() }
+    document.addEventListener('visibilitychange', onVis)
     return () => {
       cancelled = true
       clearInterval(interval)
+      document.removeEventListener('visibilitychange', onVis)
     }
   }, [enabled])
 

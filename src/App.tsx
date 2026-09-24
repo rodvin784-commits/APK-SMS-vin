@@ -3,7 +3,7 @@ import './App.css'
 import { supabase } from './lib/supabase'
 import { fetchMe, logoutSiswa } from './lib/api'
 import type { Me } from './lib/types'
-import { clearAllCache } from './lib/cache'
+import { clearAllCache, clearAllCacheIncludingScope, setSiswaScope } from './lib/cache'
 import LoginScreen from './screens/LoginScreen'
 import AppHeader from './components/layout/AppHeader'
 import BottomNav from './components/layout/BottomNav'
@@ -74,6 +74,7 @@ export default function App() {
         }
         return fetchMe()
           .then((me) => {
+            try { setSiswaScope(me.siswa.id) } catch {}
             setSesi({ me, loading: false })
             setShowWelcome(true)
           })
@@ -90,7 +91,7 @@ export default function App() {
     const yakin = window.confirm('Keluar dari akun? Anda perlu login lagi untuk masuk.')
     if (!yakin) return
     await logoutSiswa()
-    clearAllCache()
+    clearAllCacheIncludingScope()
     setSesi({ me: null, loading: false })
     setShowWelcome(false)
     setTab('dashboard')
@@ -108,6 +109,7 @@ export default function App() {
     return (
       <LoginScreen
         onSuccess={(me: Me) => {
+          try { setSiswaScope(me.siswa.id); clearAllCache() } catch {}
           setSesi({ me, loading: false })
           setShowWelcome(true)
         }}
@@ -131,8 +133,8 @@ export default function App() {
 
       <main className="app-main-new">
         <Suspense fallback={<Loading message="Memuat..." />}>
-          {/* Keep-alive: semua tab tetap mounted agar perpindahan instant, hanya hide via display */}
-          <div style={{ display: tab === 'dashboard' ? 'block' : 'none' }}>
+          {/* P2: conditional render (unmount) untuk hemat memori + polling hanya tab aktif */}
+          {tab === 'dashboard' && (
             <DashboardScreen
               nama={toTitleCase(me.siswa.nama_lengkap ?? 'Siswa')}
               kelas={kelasLabel}
@@ -141,14 +143,14 @@ export default function App() {
               onOpenVideo={() => setTab('video')}
               onOpenNotifikasi={() => setTab('notifikasi')}
             />
-          </div>
-          <div style={{ display: tab === 'tugas' ? 'block' : 'none' }}><TugasScreen /></div>
-          <div style={{ display: tab === 'materi' ? 'block' : 'none' }}><MateriScreen /></div>
-          <div style={{ display: tab === 'video' ? 'block' : 'none' }}><VideoScreen /></div>
-          <div style={{ display: tab === 'pengumuman' ? 'block' : 'none' }}><PengumumanScreen /></div>
-          <div style={{ display: tab === 'jadwal' ? 'block' : 'none' }}><JadwalScreen /></div>
-          <div style={{ display: tab === 'nilai' ? 'block' : 'none' }}><NilaiScreen /></div>
-          <div style={{ display: tab === 'notifikasi' ? 'block' : 'none' }}><NotifikasiScreen onCountChange={setUnreadCount} /></div>
+          )}
+          {tab === 'tugas' && <TugasScreen />}
+          {tab === 'materi' && <MateriScreen />}
+          {tab === 'video' && <VideoScreen />}
+          {tab === 'pengumuman' && <PengumumanScreen />}
+          {tab === 'jadwal' && <JadwalScreen />}
+          {tab === 'nilai' && <NilaiScreen />}
+          {tab === 'notifikasi' && <NotifikasiScreen onCountChange={setUnreadCount} />}
         </Suspense>
       </main>
 
