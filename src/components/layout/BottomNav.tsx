@@ -5,10 +5,10 @@
  * Tips pengembang: jika tambah tab, pastikan max 5-6 agar tidak sesak di HP kecil; 8 tab saat ini masih bisa tapi 5 lebih ideal untuk awam.
  */
 import type { ReactNode } from 'react'
-import { MdHome, MdOutlineAssignment, MdBook, MdPlayCircleOutline, MdInfoOutline, MdOutlineCalendarMonth, MdEmojiEvents, MdNotificationsNone } from 'react-icons/md'
+import { MdHome, MdOutlineAssignment, MdBook, MdPlayCircleOutline, MdInfoOutline, MdOutlineCalendarMonth, MdEmojiEvents, MdNotificationsNone, MdOutlineFactCheck } from 'react-icons/md'
 
 // Tipe tab yang diakui App.tsx — ubah di sini dan di App.tsx secara bersamaan.
-export type Tab = 'dashboard' | 'tugas' | 'materi' | 'video' | 'pengumuman' | 'jadwal' | 'nilai' | 'notifikasi'
+export type Tab = 'dashboard' | 'tugas' | 'materi' | 'video' | 'pengumuman' | 'jadwal' | 'nilai' | 'presensi' | 'notifikasi'
 
 // Definisi tiap tombol navigasi: id harus sama dengan Tab, label tampil di bawah ikon.
 interface TabDef {
@@ -25,6 +25,7 @@ export const TABS: TabDef[] = [
   { id: 'pengumuman', icon: (a) => <MdInfoOutline size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Info' },
   { id: 'jadwal', icon: (a) => <MdOutlineCalendarMonth size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Jadwal' },
   { id: 'nilai', icon: (a) => <MdEmojiEvents size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Nilai' },
+  { id: 'presensi', icon: (a) => <MdOutlineFactCheck size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Hadir' },
   { id: 'notifikasi', icon: (a) => <MdNotificationsNone size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Notif' },
 ]
 

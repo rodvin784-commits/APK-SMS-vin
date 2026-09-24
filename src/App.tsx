@@ -22,6 +22,7 @@ const VideoScreen = lazy(() => import('./screens/VideoScreen'))
 const PengumumanScreen = lazy(() => import('./screens/PengumumanScreen'))
 const JadwalScreen = lazy(() => import('./screens/JadwalScreen'))
 const NilaiScreen = lazy(() => import('./screens/NilaiScreen'))
+const PresensiScreen = lazy(() => import('./screens/PresensiScreen'))
 const NotifikasiScreen = lazy(() => import('./screens/NotifikasiScreen'))
 
 interface Sesi {
@@ -150,6 +151,7 @@ export default function App() {
           {tab === 'pengumuman' && <PengumumanScreen />}
           {tab === 'jadwal' && <JadwalScreen />}
           {tab === 'nilai' && <NilaiScreen />}
+          {tab === 'presensi' && <PresensiScreen />}
           {tab === 'notifikasi' && <NotifikasiScreen onCountChange={setUnreadCount} />}
         </Suspense>
       </main>
