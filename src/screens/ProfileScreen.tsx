@@ -4,6 +4,7 @@
  */
 import type { Me } from '../lib/types'
 import { Card } from '../components/ui/Card'
+import { toTitleCase } from '../lib/format'
 
 export default function ProfileScreen({ me }: { me: Me }) {
   const jurusan = me.kelas.jurusan_nama ? `${me.kelas.jurusan_kode ?? ''} - ${me.kelas.jurusan_nama}` : 'Tanpa Jurusan'
@@ -15,7 +16,7 @@ export default function ProfileScreen({ me }: { me: Me }) {
             {me.siswa.foto_url ? <img src={me.siswa.foto_url} alt="foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (me.siswa.nama_lengkap?.charAt(0) ?? 'S')}
           </div>
           <div>
-            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>{me.siswa.nama_lengkap ?? '-'}</h2>
+            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>{toTitleCase(me.siswa.nama_lengkap) || '-'}</h2>
             <p className="item-meta" style={{ margin: 0 }}>NIS {me.siswa.nis ?? '-'} · {me.siswa.email ?? '-'}</p>
             <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${me.siswa.status !== false ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>{me.siswa.status !== false ? 'Aktif' : 'Nonaktif'}</span>
           </div>
