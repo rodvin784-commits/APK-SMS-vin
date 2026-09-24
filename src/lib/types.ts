@@ -121,6 +121,15 @@ export interface NotifikasiItem {
   created_at: string
 }
 
+export interface PresensiItem {
+  id: string
+  tanggal: string
+  status: string
+  keterangan: string | null
+  mapel_nama: string | null
+  guru_nama: string | null
+}
+
 export interface ApiError extends Error {
   status?: number
 }

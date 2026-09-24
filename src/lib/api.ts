@@ -10,6 +10,7 @@ import type {
   NilaiItem,
   NotifikasiItem,
   PengumumanItem,
+  PresensiItem,
   TugasItem,
   VideoItem,
 } from './types'
@@ -234,4 +235,11 @@ export async function tandaiNotifikasiDibaca(ids: string[]): Promise<void> {
     method: 'POST',
     body: JSON.stringify({ ids }),
   })
+}
+
+// ---------- Presensi ----------
+
+export async function fetchPresensi(): Promise<PresensiItem[]> {
+  const json = await request<{ presensi: PresensiItem[] }>('/api/siswa/presensi')
+  return json.presensi
 }
