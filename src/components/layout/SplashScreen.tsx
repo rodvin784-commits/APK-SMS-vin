@@ -1,7 +1,8 @@
 /**
  * SplashScreen — Layar pembuka animasi logo (hanya logo selama zoom, teks muncul belakangan agar tidak tabrakan).
- * Timeline: 0–1.51s logo scale 2.2, 1.58s teks fade-in, 1.72s loader fade-in, total 2.1s lalu callback onFinish.
- * Untuk pengembang: ubah DURATION => sesuaikan delay animasi di splashCss (.splash-text 1.58s, .splash-loader 1.72s).
+ * Timeline: 0–1.7s logo scale 2.2, 1.45s teks fade-in, 1.6s loader fade-in, total 2.0s lalu callback onFinish.
+ * Untuk pengembang: ubah DURATION => sesuaikan delay animasi di splashCss (.splash-text 1.45s, .splash-loader 1.6s).
+ * Stabil: will-change, timeout cleanup, out 280ms sebelum finish agar transisi halus.
  */
 import { useEffect, useState } from 'react'
 import logo from '../../assets/logo-bn.png'
@@ -10,7 +11,7 @@ interface Props {
   onFinish: () => void // dipanggil App.tsx untuk sembunyikan splash
 }
 
-const DURATION = 1400 // ms — dipercepat dari 2100 agar render terasa sat-set, tetap animasi halus (tidak kurangi UX)
+const DURATION = 2000 // ms — dilambatkan dari 1400 agar logo terasa stabil & elegan (tidak terlalu sat-set)
 
 export default function SplashScreen({ onFinish }: Props) {
   const [out, setOut] = useState(false)
@@ -77,7 +78,7 @@ const splashCss = `
   border-radius:50%;
   border:1.5px solid rgba(2,132,199,.14);
   box-shadow:0 0 0 14px rgba(2,132,199,.06), 0 0 0 28px rgba(2,132,199,.03);
-  animation: splashRing 1.4s ease forwards;
+  animation: splashRing 2s ease forwards;
 }
 .splash-logo-wrapper::before{
   content:'';
@@ -87,7 +88,7 @@ const splashCss = `
   background:rgba(255,255,255,.92);
   filter:blur(22px);
   z-index:1;
-  animation: splashGlow 1.4s ease forwards;
+  animation: splashGlow 2s ease forwards;
 }
 .splash-logo-container{
   position:relative;
@@ -99,7 +100,7 @@ const splashCss = `
   border:1px solid rgba(186,230,253,.9);
   box-shadow:0 12px 32px rgba(2,132,199,.18), 0 1px 0 rgba(255,255,255,1) inset;
   overflow:hidden;
-  animation: splashZoom 1.4s cubic-bezier(.16,1,.3,1) forwards;
+  animation: splashZoom 2s cubic-bezier(.16,1,.3,1) forwards;
 }
 .splash-logo-container img{
   width:86%; height:86%;
@@ -113,9 +114,9 @@ const splashCss = `
   width:42%; height:200%;
   background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,.75) 50%, rgba(255,255,255,0) 100%);
   transform: rotate(22deg);
-  animation: splashShine 1.4s ease forwards;
+  animation: splashShine 2s ease forwards;
 }
-.splash-text{ margin-top:22px; text-align:center; opacity:0; animation: splashTextIn .45s .9s both cubic-bezier(.16,1,.3,1); }
+.splash-text{ margin-top:22px; text-align:center; opacity:0; animation: splashTextIn .45s 1.45s both cubic-bezier(.16,1,.3,1); }
 .splash-title{
   font-family:'Plus Jakarta Sans','Inter',sans-serif;
   font-size:20px; font-weight:800; color:#0f172a;
@@ -126,7 +127,7 @@ const splashCss = `
   letter-spacing:.5px; text-transform:uppercase;
   margin:6px 0 0; opacity:.85;
 }
-.splash-loader{ display:flex; gap:6px; margin-top:18px; opacity:0; animation: splashLoaderIn .35s 1.05s both ease; }
+.splash-loader{ display:flex; gap:6px; margin-top:18px; opacity:0; animation: splashLoaderIn .35s 1.6s both ease; }
 .splash-dot{
   width:6px; height:6px; border-radius:50%; background:#0284c7;
   opacity:.9; animation: splashDot 1s infinite;
