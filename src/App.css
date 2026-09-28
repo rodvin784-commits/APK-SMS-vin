@@ -393,15 +393,16 @@ button{ font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transpa
   z-index:20;
 }
 .nav-btn{
-  display:flex; flex-direction:column; align-items:center; gap:2px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
   background:none; border:none; padding:5px 8px; cursor:pointer;
-  position:relative; border-radius:10px; min-width:44px;
-  transition: background .15s, transform .12s;
-  color:var(--text-3);
+  position:relative; border-radius:10px; min-width:56px; min-height:52px;
+  transition: background .15s, transform .12s, color .15s;
+  color:#9CA3AF;
 }
 .nav-btn:active{ transform:scale(.96); background:var(--surface-2); }
-.nav-active{ color:var(--text); }
-.nav-active .nav-label-new{ color:var(--text); font-weight:600; }
+.nav-active{ color:#2563EB; }
+.nav-active .nav-label-new{ color:#2563EB; font-weight:700; }
+[data-theme='dark'] .nav-active, [data-theme='dark'] .nav-active .nav-label-new{ color:#60A5FA; }
 .nav-badge{
   position:absolute; top:0; right:6px;
   background:#ef4444; color:#fff;

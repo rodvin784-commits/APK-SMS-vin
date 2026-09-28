@@ -1,10 +1,21 @@
 /**
- * DashboardScreen — Halaman utama siswa (mobile).
- * Menampilkan: salam, hero banner, 4 kartu statistik, jadwal hari ini, tugas & pengumuman terbaru.
- * Catatan untuk pengembang: data diambil dari GET /api/siswa/dashboard (lihat lib/api.ts).
- * Navigasi tab di-handle oleh App.tsx via props onOpenX — jangan hardcode navigate di sini.
+ * DashboardScreen — Beranda siswa (mobile). Clean light theme (Tailwind + lucide).
+ * Isi: sapaan + badge kelas + tanggal, stat scroll horizontal, jadwal ringkas,
+ * tugas terdekat (urut deadline), menu "Lainnya". Data real dari GET /api/siswa/dashboard.
+ * Navigasi via props onOpenX dari App.tsx — jangan hardcode navigate di sini.
  */
 import { useEffect, useMemo, useState } from 'react'
+import {
+  Bell,
+  BookOpen,
+  CalendarDays,
+  ChevronRight,
+  ClipboardList,
+  FileCheck,
+  Info,
+  LayoutGrid,
+  PlayCircle,
+} from 'lucide-react'
 import { fetchDashboard } from '../lib/api'
 import type { DashboardData } from '../lib/types'
 import { formatTanggal, formatJam, mapErrorMessage } from '../lib/format'
@@ -12,18 +23,6 @@ import { cacheDashboard, getCachedDashboard } from '../lib/cache'
 import Loading from '../components/ui/Loading'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
-import { toTitleCase } from '../lib/format'
-import {
-  MdAssignment,
-  MdBook,
-  MdPlayCircleOutline,
-  MdNotifications,
-  MdCalendarMonth,
-  MdCalendarToday,
-  MdChevronRight,
-  MdCampaign,
-  MdSchool,
-} from 'react-icons/md'
 
 function ucapanSelamat(): string {
   const jam = new Date().getHours()
@@ -33,52 +32,65 @@ function ucapanSelamat(): string {
   return 'Selamat Malam'
 }
 
-function formatTanggalLengkap(): string {
+// Satu baris: "Senin, 28 Sep 2026 • 13:59 WIB" (menyatu di header, bukan kartu).
+function formatTanggalSatuBaris(): string {
   const hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
   const bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
   const now = new Date()
-  const h = hari[now.getDay()]
-  const t = now.getDate()
-  const b = bulan[now.getMonth()]
-  const th = now.getFullYear()
   const jam = String(now.getHours()).padStart(2, '0')
   const menit = String(now.getMinutes()).padStart(2, '0')
-  return `${h}, ${t} ${b} ${th}\n${jam}:${menit} WIB`
+  return `${hari[now.getDay()]}, ${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()} • ${jam}:${menit} WIB`
 }
 
-// Helper: tentukan label & warna badge deadline agar siswa paham urgensi.
-function getDeadlineBadge(deadline: string): { text: string; color: string; bg: string } {
+// Badge urgensi deadline (kelas Tailwind agar ikut tema).
+function getDeadlineBadge(deadline: string): { text: string; cls: string } {
   const now = new Date()
   const dl = new Date(deadline)
   const diff = Math.ceil((dl.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-  if (diff < 0) return { text: 'Terlewat', color: '#F44336', bg: '#FFEBEE' }
-  if (diff <= 3) return { text: 'Segera', color: '#F44336', bg: '#FFEBEE' }
-  if (diff <= 7) return { text: `${diff} hari lagi`, color: '#2196F3', bg: '#E3F2FD' }
-  return { text: formatTanggal(deadline), color: '#6B7280', bg: '#F3F4F6' }
+  if (diff < 0 || diff <= 3) return { text: diff < 0 ? 'Terlewat' : 'Segera', cls: 'bg-red-50 text-red-600' }
+  if (diff <= 7) return { text: `${diff} hari lagi`, cls: 'bg-blue-50 text-blue-600' }
+  return { text: formatTanggal(deadline), cls: 'bg-gray-100 text-gray-500 dark:bg-white/10 dark:text-gray-300' }
 }
 
-// Props: semua handler navigasi berasal dari App.tsx agar satu sumber kebenaran (single source of truth).
+// Props: semua handler navigasi berasal dari App.tsx (single source of truth).
 interface Props {
   nama: string
   kelas: string
+  unreadCount: number
   onOpenTugas: () => void
   onOpenMateri: () => void
   onOpenVideo: () => void
   onOpenNotifikasi: () => void
+  onOpenJadwal: () => void
+  onOpenPengumuman: () => void
+  onOpenPresensi: () => void
 }
 
-export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenMateri, onOpenVideo, onOpenNotifikasi }: Props) {
+const cardCls =
+  'rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-[var(--border)] dark:bg-[var(--surface)]'
+const sectionTitleCls = 'text-sm font-bold text-gray-900 dark:text-[var(--text)]'
+
+export default function DashboardScreen({
+  nama,
+  kelas,
+  unreadCount,
+  onOpenTugas,
+  onOpenMateri,
+  onOpenVideo,
+  onOpenNotifikasi,
+  onOpenJadwal,
+  onOpenPengumuman,
+  onOpenPresensi,
+}: Props) {
   const [data, setData] = useState<DashboardData | null>(() => getCachedDashboard())
   const [loading, setLoading] = useState(() => !getCachedDashboard())
   const [error, setError] = useState<string | null>(null)
   const [muatUlang, setMuatUlang] = useState(0)
   const ucapan = useMemo(() => ucapanSelamat(), [])
-  const [tanggal, setTanggal] = useState(formatTanggalLengkap())
+  const [tanggal, setTanggal] = useState(formatTanggalSatuBaris())
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTanggal(formatTanggalLengkap())
-    }, 60000)
+    const interval = setInterval(() => setTanggal(formatTanggalSatuBaris()), 60000)
     return () => clearInterval(interval)
   }, [])
 
@@ -105,6 +117,14 @@ export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenMateri
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [muatUlang])
 
+  // Tugas terdekat = urut deadline menaik, ambil 3 (data real, tanpa fetch baru).
+  const tugasTerdekat = useMemo(() => {
+    if (!data) return []
+    return [...data.tugas_terbaru]
+      .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+      .slice(0, 3)
+  }, [data])
+
   if (loading) return <Loading message="Memuat dashboard..." />
   if (error && !data) {
     return (
@@ -115,158 +135,145 @@ export default function DashboardScreen({ nama, kelas, onOpenTugas, onOpenMateri
   }
   if (!data) return null
 
+  const badgeKelas = [data.kelas.nama_kelas, data.kelas.tahun_ajaran].filter(Boolean).join(' • ') || kelas
+
+  const stats = [
+    { label: 'Tugas', count: data.counts.tugas, onOpen: onOpenTugas, box: 'bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300', Icon: ClipboardList },
+    { label: 'Materi', count: data.counts.materi, onOpen: onOpenMateri, box: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300', Icon: BookOpen },
+    { label: 'Video', count: data.counts.video, onOpen: onOpenVideo, box: 'bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300', Icon: PlayCircle },
+    { label: 'Notifikasi', count: unreadCount, onOpen: onOpenNotifikasi, box: 'bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-300', Icon: Bell },
+  ]
+
+  const lainnya = [
+    { label: 'Materi', onOpen: onOpenMateri, box: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300', Icon: BookOpen },
+    { label: 'Video', onOpen: onOpenVideo, box: 'bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300', Icon: PlayCircle },
+    { label: 'Pengumuman', onOpen: onOpenPengumuman, box: 'bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300', Icon: Info },
+    { label: 'Presensi', onOpen: onOpenPresensi, box: 'bg-teal-50 text-teal-600 dark:bg-teal-500/15 dark:text-teal-300', Icon: FileCheck },
+  ]
+
   return (
-    <div className="dashboard-screen">
-      {/* Greeting Section */}
-      <div className="greeting-container">
-        <div className="greeting-left">
-          <p className="greeting-text">{ucapan},</p>
-          <h2 className="user-name">{toTitleCase(nama)} 👋</h2>
-          <p className="welcome-text">Selamat datang di Portal Siswa</p>
+    <div className="space-y-5">
+      {/* Sapaan + badge kelas + tanggal (menyatu, tanpa kartu profil ganda) */}
+      <section aria-label="Sapaan">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-[var(--text)]">
+          {ucapan}, {nama} 👋
+        </h1>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600 dark:bg-blue-500/15 dark:text-blue-300">
+            {badgeKelas}
+          </span>
         </div>
-        <div className="date-container">
-          <MdCalendarToday size={14} color="#666" />
-          <span className="date-text">{tanggal}</span>
-        </div>
-      </div>
+        <p className="mt-1.5 text-sm text-gray-500 dark:text-[var(--text-2)]">{tanggal}</p>
+      </section>
 
-      {/* Hero Banner */}
-      <div className="hero-banner">
-        <div className="hero-text">
-          <span className="hero-subtitle">{kelas}</span>
-          <h3 className="hero-title">{toTitleCase(nama)}</h3>
-          <p className="hero-desc">Terus belajar, terus berkembang,{'\n'}raih masa depan yang lebih baik.</p>
+      {/* Statistik — scroll horizontal, ikon kiri + angka/judul bertumpuk */}
+      <section aria-label="Ringkasan">
+        <div className="flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {stats.map(({ label, count, onOpen, box, Icon }) => (
+            <button
+              key={label}
+              onClick={onOpen}
+              aria-label={`Buka ${label}`}
+              className={`${cardCls} flex min-h-[76px] min-w-[148px] flex-1 snap-start items-center gap-3 p-4 text-left transition-shadow hover:shadow active:scale-[0.98]`}
+            >
+              <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${box}`} aria-hidden>
+                <Icon className="h-6 w-6" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-xl font-extrabold leading-tight text-gray-900 dark:text-[var(--text)]">{count}</span>
+                <span className="block truncate text-xs font-medium text-gray-500 dark:text-[var(--text-2)]">{label}</span>
+              </span>
+            </button>
+          ))}
         </div>
-        <MdSchool size={60} color="#fff" className="hero-icon" />
-      </div>
+      </section>
 
-      {/* Stats Grid */}
-      <div className="stats-grid">
-        <button className="stat-card stat-tugas" onClick={onOpenTugas}>
-          <div className="stat-header">
-            <MdAssignment size={24} color="#2196F3" />
-            <MdChevronRight size={20} color="#999" />
+      {/* Jadwal hari ini — ringkas */}
+      <section aria-label="Jadwal hari ini" className={cardCls}>
+        <div className="flex items-center gap-2 border-b border-gray-100 px-4 py-3 dark:border-[var(--border)]">
+          <CalendarDays className="h-4 w-4 text-blue-600" aria-hidden />
+          <h2 className={sectionTitleCls}>Jadwal Hari Ini</h2>
+        </div>
+        {data.jadwal_hari_ini.length === 0 ? (
+          <div className="flex flex-col items-center px-4 py-5 text-center">
+            <CalendarDays className="h-9 w-9 text-gray-300 dark:text-gray-600" aria-hidden />
+            <p className="mt-2 text-sm text-gray-500 dark:text-[var(--text-2)]">Tidak ada jadwal hari ini</p>
+            <button
+              onClick={onOpenJadwal}
+              className="mt-2 min-h-[44px] rounded-full bg-blue-50 px-4 text-xs font-bold text-blue-600 transition-colors hover:bg-blue-100 dark:bg-blue-500/15 dark:text-blue-300"
+            >
+              Lihat Besok
+            </button>
           </div>
-          <span className="stat-count">{data.counts.tugas}</span>
-          <span className="stat-title">Tugas</span>
+        ) : (
+          <ul className="divide-y divide-gray-100 dark:divide-[var(--border)]">
+            {data.jadwal_hari_ini.slice(0, 3).map((j) => (
+              <li key={j.id} className="flex items-center gap-3 px-4 py-2.5">
+                <span className="w-20 shrink-0 text-xs font-bold text-blue-600 dark:text-blue-300">
+                  {formatJam(j.jam_mulai)}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold text-gray-900 dark:text-[var(--text)]">{j.mapel_nama}</span>
+                  <span className="block truncate text-xs text-gray-500 dark:text-[var(--text-2)]">{j.guru_nama} · {j.ruangan || '—'}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* Tugas terdekat — urut deadline agar layar terisi info berguna */}
+      <section aria-label="Tugas terdekat" className={cardCls}>
+        <button onClick={onOpenTugas} className="flex min-h-[44px] w-full items-center justify-between px-4 py-3 text-left">
+          <span className="flex items-center gap-2">
+            <ClipboardList className="h-4 w-4 text-blue-600" aria-hidden />
+            <span className={sectionTitleCls}>Tugas Terdekat</span>
+          </span>
+          <ChevronRight className="h-4 w-4 text-gray-400" aria-hidden />
         </button>
-        {/* Kartu Materi — arahkan ke tab Materi (sebelumnya kosong, diperbaiki untuk UX awam) */}
-        <button className="stat-card stat-materi" onClick={onOpenMateri} aria-label="Buka materi">
-          <div className="stat-header">
-            <MdBook size={24} color="#4CAF50" />
-            <MdChevronRight size={20} color="#999" />
-          </div>
-          <span className="stat-count">{data.counts.materi}</span>
-          <span className="stat-title">Materi</span>
-        </button>
-        {/* Kartu Video — arahkan ke tab Video */}
-        <button className="stat-card stat-video" onClick={onOpenVideo} aria-label="Buka video">
-          <div className="stat-header">
-            <MdPlayCircleOutline size={24} color="#9C27B0" />
-            <MdChevronRight size={20} color="#999" />
-          </div>
-          <span className="stat-count">{data.counts.video}</span>
-          <span className="stat-title">Video</span>
-        </button>
-        <button className="stat-card stat-notif" onClick={onOpenNotifikasi}>
-          <div className="stat-header">
-            <MdNotifications size={24} color="#FF9800" />
-            <MdChevronRight size={20} color="#999" />
-          </div>
-          <span className="stat-count">{data.counts.notifikasi_belum_dibaca}</span>
-          <span className="stat-title">Notifikasi Baru</span>
-        </button>
-      </div>
+        {tugasTerdekat.length === 0 ? (
+          <p className="px-4 pb-4 text-sm text-gray-500 dark:text-[var(--text-2)]">Belum ada tugas.</p>
+        ) : (
+          <ul className="divide-y divide-gray-100 border-t border-gray-100 dark:divide-[var(--border)] dark:border-[var(--border)]">
+            {tugasTerdekat.map((t) => {
+              const badge = getDeadlineBadge(t.deadline)
+              return (
+                <li key={t.id}>
+                  <button onClick={onOpenTugas} className="flex min-h-[44px] w-full items-center gap-3 px-4 py-2.5 text-left">
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold text-gray-900 dark:text-[var(--text)]">{t.judul}</span>
+                      <span className="block truncate text-xs text-gray-500 dark:text-[var(--text-2)]">{t.mapel_nama} • {formatTanggal(t.deadline)}</span>
+                    </span>
+                    <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${badge.cls}`}>{badge.text}</span>
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </section>
 
-      {/* Jadwal Hari Ini */}
-      <div className="section-header">
-        <div className="section-header-left">
-          <MdCalendarMonth size={20} color="#2196F3" />
-          <h3 className="section-title">Jadwal Hari Ini</h3>
+      {/* Lainnya — pengganti tab yang keluar dari BottomNav */}
+      <section aria-label="Menu lainnya" className={cardCls}>
+        <div className="flex items-center gap-2 border-b border-gray-100 px-4 py-3 dark:border-[var(--border)]">
+          <LayoutGrid className="h-4 w-4 text-gray-500" aria-hidden />
+          <h2 className={sectionTitleCls}>Lainnya</h2>
         </div>
-      </div>
-      {data.jadwal_hari_ini.length === 0 ? (
-        <div className="empty-card">
-          <MdCalendarToday size={48} color="#D1D5DB" />
-          <p className="empty-text">Tidak ada jadwal hari ini.</p>
+        <div className="grid grid-cols-2 gap-2.5 p-4">
+          {lainnya.map(({ label, onOpen, box, Icon }) => (
+            <button
+              key={label}
+              onClick={onOpen}
+              className="flex min-h-[52px] items-center gap-2.5 rounded-xl border border-gray-100 bg-gray-50 px-3.5 text-left transition-colors hover:bg-gray-100 dark:border-[var(--border)] dark:bg-white/5 dark:hover:bg-white/10"
+            >
+              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${box}`} aria-hidden>
+                <Icon className="h-5 w-5" />
+              </span>
+              <span className="truncate text-sm font-semibold text-gray-800 dark:text-[var(--text)]">{label}</span>
+            </button>
+          ))}
         </div>
-      ) : (
-        data.jadwal_hari_ini.map((j) => (
-          <div key={j.id} className="jadwal-card">
-            <div className="jadwal-time">
-              <span>{formatJam(j.jam_mulai)}</span>
-              <span>-</span>
-              <span>{formatJam(j.jam_selesai)}</span>
-            </div>
-            <div className="jadwal-info">
-              <strong>{j.mapel_nama}</strong>
-              <span>{j.guru_nama} · {j.ruangan || '—'}</span>
-            </div>
-          </div>
-        ))
-      )}
-
-      {/* Tugas Terbaru */}
-      <div className="section-header">
-        <div className="section-header-left">
-          <MdAssignment size={20} color="#2196F3" />
-          <h3 className="section-title">Tugas Terbaru</h3>
-        </div>
-        <button className="see-all" onClick={onOpenTugas}>Lihat Semua →</button>
-      </div>
-      {data.tugas_terbaru.length === 0 ? (
-        <div className="empty-card">
-          <MdAssignment size={48} color="#D1D5DB" />
-          <p className="empty-text">Belum ada tugas.</p>
-        </div>
-      ) : (
-        data.tugas_terbaru.slice(0, 3).map((t) => {
-          const badge = getDeadlineBadge(t.deadline)
-          return (
-            <div key={t.id} className="task-card" onClick={onOpenTugas} role="button">
-              <div className="icon-box icon-box-blue">
-                <MdAssignment size={24} color="#2196F3" />
-              </div>
-              <div className="card-content">
-                <span className="card-title">{t.judul}</span>
-                <span className="card-subtitle">{t.mapel_nama} | {t.guru_nama} • deadline {formatTanggal(t.deadline)}</span>
-              </div>
-              <span className="task-badge" style={{ backgroundColor: badge.bg, color: badge.color }}>{badge.text}</span>
-              <MdChevronRight size={24} color="#999" />
-            </div>
-          )
-        })
-      )}
-
-      {/* Pengumuman Terbaru */}
-      <div className="section-header">
-        <div className="section-header-left">
-          <MdCampaign size={20} color="#2196F3" />
-          <h3 className="section-title">Pengumuman Terbaru</h3>
-        </div>
-      </div>
-      {data.pengumuman_terbaru.length === 0 ? (
-        <div className="empty-card">
-          <MdCampaign size={48} color="#D1D5DB" />
-          <p className="empty-text">Belum ada pengumuman.</p>
-        </div>
-      ) : (
-        data.pengumuman_terbaru.slice(0, 3).map((p) => (
-          <div key={p.id} className="announcement-card">
-            <div className="icon-box icon-box-purple">
-              <MdCampaign size={24} color="#9C27B0" />
-            </div>
-            <div className="card-content">
-              <span className="card-title">{p.judul}</span>
-              <span className="card-subtitle">{p.isi.slice(0, 60)}{p.isi.length > 60 ? '…' : ''}</span>
-              <span className="card-date">📅 {formatTanggal(p.created_at)}</span>
-            </div>
-            <MdChevronRight size={24} color="#999" />
-          </div>
-        ))
-      )}
-
-      <div style={{ height: 20 }} />
+      </section>
     </div>
   )
 }

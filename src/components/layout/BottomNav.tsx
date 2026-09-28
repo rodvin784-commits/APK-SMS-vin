@@ -1,14 +1,14 @@
 /* eslint-disable react-refresh/only-export-components */
 /**
- * BottomNav — Navigasi bawah APK Siswa (mobile).
- * Daftar tab terpusat di TABS agar mudah tambah/kurangi.
- * Tips pengembang: jika tambah tab, pastikan max 5-6 agar tidak sesak di HP kecil; 8 tab saat ini masih bisa tapi 5 lebih ideal untuk awam.
+ * BottomNav — Navigasi bawah APK Siswa (mobile). Maksimal 5 item agar lega di HP kecil.
+ * Layar lain (Materi, Video, Info, Hadir, Notif) dibuka dari menu "Lainnya" di Beranda.
  */
 import type { ReactNode } from 'react'
-import { MdHome, MdOutlineAssignment, MdBook, MdPlayCircleOutline, MdInfoOutline, MdOutlineCalendarMonth, MdEmojiEvents, MdNotificationsNone, MdOutlineFactCheck } from 'react-icons/md'
+import { MdHome, MdOutlineAssignment, MdOutlineCalendarMonth, MdEmojiEvents, MdPersonOutline } from 'react-icons/md'
 
-// Tipe tab yang diakui App.tsx — ubah di sini dan di App.tsx secara bersamaan.
-export type Tab = 'dashboard' | 'tugas' | 'materi' | 'video' | 'pengumuman' | 'jadwal' | 'nilai' | 'presensi' | 'notifikasi'
+// Tipe tab yang diakui App.tsx — 'profile' tampil di nav; materi/video/dll tetap
+// dirender App tapi dibuka dari menu "Lainnya" (bukan BottomNav).
+export type Tab = 'dashboard' | 'tugas' | 'materi' | 'video' | 'pengumuman' | 'jadwal' | 'nilai' | 'presensi' | 'notifikasi' | 'profile'
 
 // Definisi tiap tombol navigasi: id harus sama dengan Tab, label tampil di bawah ikon.
 interface TabDef {
@@ -18,34 +18,32 @@ interface TabDef {
 }
 
 export const TABS: TabDef[] = [
-  { id: 'dashboard', icon: (a) => <MdHome size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Home' },
-  { id: 'tugas', icon: (a) => <MdOutlineAssignment size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Tugas' },
-  { id: 'materi', icon: (a) => <MdBook size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Materi' },
-  { id: 'video', icon: (a) => <MdPlayCircleOutline size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Video' },
-  { id: 'pengumuman', icon: (a) => <MdInfoOutline size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Info' },
-  { id: 'jadwal', icon: (a) => <MdOutlineCalendarMonth size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Jadwal' },
-  { id: 'nilai', icon: (a) => <MdEmojiEvents size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Nilai' },
-  { id: 'presensi', icon: (a) => <MdOutlineFactCheck size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Hadir' },
-  { id: 'notifikasi', icon: (a) => <MdNotificationsNone size={22} color={a ? '#111827' : '#9CA3AF'} />, label: 'Notif' },
+  { id: 'dashboard', icon: () => <MdHome size={24} />, label: 'Home' },
+  { id: 'tugas', icon: () => <MdOutlineAssignment size={24} />, label: 'Tugas' },
+  { id: 'jadwal', icon: () => <MdOutlineCalendarMonth size={24} />, label: 'Jadwal' },
+  { id: 'nilai', icon: () => <MdEmojiEvents size={24} />, label: 'Nilai' },
+  { id: 'profile', icon: () => <MdPersonOutline size={24} />, label: 'Profil' },
 ]
 
 interface Props {
   activeTab: Tab
-  unreadCount: number
   onChange: (tab: Tab) => void
 }
 
-export default function BottomNav({ activeTab, unreadCount, onChange }: Props) {
+export default function BottomNav({ activeTab, onChange }: Props) {
   return (
-    <nav className="bottom-nav-new">
+    <nav className="bottom-nav-new" aria-label="Navigasi utama">
       {TABS.map((t) => {
         const active = activeTab === t.id
         return (
-          <button key={t.id} className={`nav-btn ${active ? 'nav-active' : ''}`} onClick={() => onChange(t.id)}>
-            <span style={{ position: 'relative' }}>
-              {t.icon(active)}
-              {t.id === 'notifikasi' && unreadCount > 0 && <span className="nav-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
-            </span>
+          <button
+            key={t.id}
+            className={`nav-btn ${active ? 'nav-active' : ''}`}
+            aria-current={active ? 'page' : undefined}
+            aria-label={t.label}
+            onClick={() => onChange(t.id)}
+          >
+            {t.icon(active)}
             <span className={`nav-label-new ${active ? 'nav-label-active' : ''}`}>{t.label}</span>
           </button>
         )

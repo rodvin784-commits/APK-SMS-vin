@@ -1,9 +1,10 @@
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   build: {
     // Code-split agar initial load cepat — tab lain di-load on-demand (React.lazy di App.tsx)
     rollupOptions: {
@@ -12,7 +13,7 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             if (id.includes('react')) return 'vendor-react'
             if (id.includes('supabase')) return 'vendor-supabase'
-            if (id.includes('react-icons')) return 'vendor-icons'
+            if (id.includes('react-icons') || id.includes('lucide-react')) return 'vendor-icons'
             return 'vendor'
           }
         },

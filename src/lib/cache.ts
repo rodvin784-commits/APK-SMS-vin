@@ -44,7 +44,7 @@ function getCache<T>(key: string): T | null {
 export function setSiswaScope(uid: string): void {
   try {
     localStorage.setItem('siswa_uid', uid)
-  } catch {}
+  } catch { /* penyimpanan penuh/diblokir — abaikan */ }
 }
 
 export function clearAllCache(): void {
@@ -62,7 +62,7 @@ export function clearAllCacheIncludingScope(): void {
     const keys = Object.keys(localStorage).filter((k) => k.startsWith(CACHE_PREFIX) || k === 'siswa_uid')
     keys.forEach((k) => localStorage.removeItem(k))
     localStorage.removeItem('siswa_uid')
-  } catch {}
+  } catch { /* penyimpanan diblokir — abaikan */ }
 }
 
 // Tugas

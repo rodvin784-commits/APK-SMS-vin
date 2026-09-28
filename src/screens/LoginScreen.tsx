@@ -30,11 +30,6 @@ export default function LoginScreen({ onSuccess, pesanAwal }: Props) {
   const dibatalkan = useRef(false)
   useEffect(() => () => { dibatalkan.current = true }, [])
 
-  // Tampilkan info terbaru dari App (mis. setelah OAuth ditolak server).
-  useEffect(() => {
-    if (pesanAwal) setError(pesanAwal)
-  }, [pesanAwal])
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)

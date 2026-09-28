@@ -3,13 +3,14 @@
  * Data dari props `me` (sudah ada di App.tsx), tidak fetch ulang. Edit → hubungi admin.
  */
 import { useEffect, useState } from 'react'
+import { LogOut } from 'lucide-react'
 import type { Me } from '../lib/types'
 import { Card } from '../components/ui/Card'
 import { toTitleCase } from '../lib/format'
 import { supabase } from '../lib/supabase'
 import { API_BASE_URL } from '../lib/env'
 
-export default function ProfileScreen({ me }: { me: Me }) {
+export default function ProfileScreen({ me, onLogout }: { me: Me; onLogout: () => void }) {
   const jurusan = me.kelas.jurusan_nama ? `${me.kelas.jurusan_kode ?? ''} - ${me.kelas.jurusan_nama}` : 'Tanpa Jurusan'
   const [curr, setCurr] = useState('')
   const [next, setNext] = useState('')
@@ -59,6 +60,14 @@ export default function ProfileScreen({ me }: { me: Me }) {
         </div>
         <p style={{ fontSize: 12, color: '#64748b', marginTop: 12, textAlign: 'center' }}>Edit data? Hubungi admin sekolah.</p>
       </Card>
+      <button
+        onClick={onLogout}
+        aria-label="Keluar dari akun"
+        className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-white px-4 text-sm font-bold text-red-600 transition-colors active:scale-[0.98] dark:border-red-500/30 dark:bg-transparent dark:text-red-400"
+      >
+        <LogOut className="h-4 w-4" aria-hidden />
+        Keluar dari Akun
+      </button>
       <Card>
         <h3 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 800 }}>Ganti Sandi (1x)</h3>
         <p className="item-meta" style={{ margin: '0 0 8px' }}>Sisa: {remaining} / 1 {used>=1 && <span style={{color:'#e11d48'}}>sudah dipakai</span>}</p>

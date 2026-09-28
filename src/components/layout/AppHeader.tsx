@@ -1,8 +1,9 @@
 /**
- * AppHeader — Header atas APK (sticky). Menampilkan judul, toggle tema, notif, avatar, logout.
+ * AppHeader — Header atas APK (sticky). Lonceng notifikasi + avatar profil saja.
+ * Logout pindah ke halaman Profil agar header ringkas.
  * Semua aksi di-inject via props agar mudah di-test & diganti.
  */
-import { MdNotificationsNone, MdPerson, MdLogout } from 'react-icons/md'
+import { MdNotificationsNone, MdPerson } from 'react-icons/md'
 
 interface Props {
   title?: string // default: "SMK Bagimu Negeriku"
@@ -12,10 +13,9 @@ interface Props {
   onToggleDark: () => void
   onOpenNotifikasi: () => void
   onOpenProfile?: () => void
-  onLogout: () => void // dipanggil setelah konfirmasi (ditangani di App.tsx)
 }
 
-export default function AppHeader({ title = 'SMK Bagimu Negeriku', unreadCount, darkMode, userName, onToggleDark, onOpenNotifikasi, onOpenProfile, onLogout }: Props) {
+export default function AppHeader({ title = 'SMK Bagimu Negeriku', unreadCount, darkMode, userName, onToggleDark, onOpenNotifikasi, onOpenProfile }: Props) {
   return (
     <header className="app-header-new">
       <span className="header-title">{title}</span>
@@ -31,9 +31,6 @@ export default function AppHeader({ title = 'SMK Bagimu Negeriku', unreadCount, 
         </button>
         <button className="avatar-circle" title={userName} aria-label="Profil" onClick={onOpenProfile} style={{ border: 'none', cursor: onOpenProfile ? 'pointer' : 'default' }}>
           <MdPerson size={16} color="#fff" />
-        </button>
-        <button className="icon-btn" onClick={onLogout} aria-label="Keluar" title="Keluar">
-          <MdLogout size={20} color={darkMode ? '#9ca3af' : '#666'} />
         </button>
       </div>
     </header>
