@@ -9,7 +9,6 @@ import { assertConfig } from './lib/env.ts'
 // console.warn/error tetap hidup agar masalah serius tetap terlacak.
 if (import.meta.env.PROD) {
   for (const metode of ['log', 'info', 'debug'] as const) {
-    // eslint-disable-next-line no-console
     console[metode] = () => undefined
   }
 }

@@ -57,8 +57,7 @@ interface Props {
   kelas: string
   unreadCount: number
   onOpenTugas: () => void
-  onOpenMateri: () => void
-  onOpenVideo: () => void
+  onOpenBelajar: () => void
   onOpenNotifikasi: () => void
   onOpenJadwal: () => void
   onOpenPengumuman: () => void
@@ -73,8 +72,7 @@ export default function DashboardScreen({
   kelas,
   unreadCount,
   onOpenTugas,
-  onOpenMateri,
-  onOpenVideo,
+  onOpenBelajar,
   onOpenNotifikasi,
   onOpenJadwal,
   onOpenPengumuman,
@@ -137,14 +135,13 @@ export default function DashboardScreen({
 
   const stats = [
     { label: 'Tugas', count: data.counts.tugas, onOpen: onOpenTugas, box: 'bg-blue-50 text-blue-600', Icon: ClipboardList },
-    { label: 'Materi', count: data.counts.materi, onOpen: onOpenMateri, box: 'bg-emerald-50 text-emerald-600', Icon: BookOpen },
-    { label: 'Video', count: data.counts.video, onOpen: onOpenVideo, box: 'bg-purple-50 text-purple-600', Icon: PlayCircle },
+    { label: 'Materi', count: data.counts.materi, onOpen: onOpenBelajar, box: 'bg-emerald-50 text-emerald-600', Icon: BookOpen },
+    { label: 'Video', count: data.counts.video, onOpen: onOpenBelajar, box: 'bg-purple-50 text-purple-600', Icon: PlayCircle },
     { label: 'Notifikasi', count: unreadCount, onOpen: onOpenNotifikasi, box: 'bg-orange-50 text-orange-600', Icon: Bell },
   ]
 
-  const lainnya = [
-    { label: 'Materi', onOpen: onOpenMateri, box: 'bg-emerald-50 text-emerald-600', Icon: BookOpen },
-    { label: 'Video', onOpen: onOpenVideo, box: 'bg-purple-50 text-purple-600', Icon: PlayCircle },
+  const lainnya: { label: string; desc?: string; onOpen: () => void; box: string; Icon: typeof BookOpen }[] = [
+    { label: 'Belajar', desc: 'Materi & video per mapel', onOpen: onOpenBelajar, box: 'bg-indigo-50 text-indigo-600', Icon: BookOpen },
     { label: 'Pengumuman', onOpen: onOpenPengumuman, box: 'bg-sky-50 text-sky-600', Icon: Info },
     { label: 'Presensi', onOpen: onOpenPresensi, box: 'bg-teal-50 text-teal-600', Icon: FileCheck },
   ]
@@ -258,7 +255,7 @@ export default function DashboardScreen({
           <h2 className={sectionTitleCls}>Lainnya</h2>
         </div>
         <div className="grid grid-cols-2 gap-3 px-5 pb-5">
-          {lainnya.map(({ label, onOpen, box, Icon }) => (
+          {lainnya.map(({ label, desc, onOpen, box, Icon }) => (
             <button
               key={label}
               onClick={onOpen}
@@ -267,7 +264,10 @@ export default function DashboardScreen({
               <span className={`rounded-xl p-2 ${box}`} aria-hidden>
                 <Icon className="h-5 w-5" />
               </span>
-              <span className="truncate text-sm font-semibold text-slate-800">{label}</span>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-slate-800">{label}</span>
+                {desc && <span className="block truncate text-xs text-slate-500">{desc}</span>}
+              </span>
             </button>
           ))}
         </div>

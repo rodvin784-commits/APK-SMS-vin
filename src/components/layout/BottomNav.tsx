@@ -6,9 +6,9 @@
 import type { ReactNode } from 'react'
 import { House, ClipboardList, CalendarDays, Award, UserRound } from 'lucide-react'
 
-// Tipe tab yang diakui App.tsx — 'profile' tampil di nav; materi/video/dll tetap
-// dirender App tapi dibuka dari menu "Lainnya" (bukan BottomNav).
-export type Tab = 'dashboard' | 'tugas' | 'materi' | 'video' | 'pengumuman' | 'jadwal' | 'nilai' | 'presensi' | 'notifikasi' | 'profile'
+// Tipe tab yang diakui App.tsx. Materi & video digabung dalam tab 'belajar'
+// (layar BelajarScreen); materi/video lama sudah dihapus.
+export type Tab = 'dashboard' | 'tugas' | 'belajar' | 'pengumuman' | 'jadwal' | 'nilai' | 'presensi' | 'notifikasi' | 'profile'
 
 // Definisi tiap tombol navigasi: id harus sama dengan Tab, label tampil di bawah ikon.
 interface TabDef {

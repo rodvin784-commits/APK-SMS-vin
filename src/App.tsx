@@ -17,8 +17,7 @@ import { toTitleCase } from './lib/format'
 // Lazy screens — hanya load saat tab dibuka, initial bundle jadi ringan (minimalis, tidak kurangi UX)
 const DashboardScreen = lazy(() => import('./screens/DashboardScreen'))
 const TugasScreen = lazy(() => import('./screens/TugasScreen'))
-const MateriScreen = lazy(() => import('./screens/MateriScreen'))
-const VideoScreen = lazy(() => import('./screens/VideoScreen'))
+const BelajarScreen = lazy(() => import('./screens/BelajarScreen'))
 const PengumumanScreen = lazy(() => import('./screens/PengumumanScreen'))
 const JadwalScreen = lazy(() => import('./screens/JadwalScreen'))
 const NilaiScreen = lazy(() => import('./screens/NilaiScreen'))
@@ -63,7 +62,7 @@ export default function App() {
     }
     idle(() => {
       void import('./screens/TugasScreen')
-      void import('./screens/MateriScreen')
+      void import('./screens/BelajarScreen')
       void import('./screens/JadwalScreen')
     })
   }, [sesi.me, showWelcome, showSplash])
@@ -235,8 +234,7 @@ export default function App() {
                 kelas={kelasLabel}
                 unreadCount={unreadCount}
                 onOpenTugas={() => setTab('tugas')}
-                onOpenMateri={() => setTab('materi')}
-                onOpenVideo={() => setTab('video')}
+                onOpenBelajar={() => setTab('belajar')}
                 onOpenNotifikasi={() => setTab('notifikasi')}
                 onOpenJadwal={() => setTab('jadwal')}
                 onOpenPengumuman={() => setTab('pengumuman')}
@@ -244,8 +242,7 @@ export default function App() {
               />
             )}
             {tab === 'tugas' && <TugasScreen />}
-            {tab === 'materi' && <MateriScreen />}
-            {tab === 'video' && <VideoScreen />}
+            {tab === 'belajar' && <BelajarScreen />}
             {tab === 'pengumuman' && <PengumumanScreen />}
             {tab === 'jadwal' && <JadwalScreen />}
             {tab === 'nilai' && <NilaiScreen />}
