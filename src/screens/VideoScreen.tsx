@@ -6,7 +6,7 @@ import Loading from '../components/ui/Loading'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 import EmptyState from '../components/ui/EmptyState'
-import { MdPlayCircleOutline } from 'react-icons/md'
+import { CirclePlay } from 'lucide-react'
 
 const VALID_YT_HOSTS = ['youtube.com', 'www.youtube.com', 'youtu.be']
 function youtubeEmbed(url: string): string | null {
@@ -62,7 +62,7 @@ export default function VideoScreen() {
     )
   }
 
-  if (video.length === 0) return <div className="screen"><EmptyState message="Belum ada video pembelajaran." icon={<MdPlayCircleOutline size={42} color="#cbd5e1" />} /></div>
+  if (video.length === 0) return <div className="screen"><EmptyState message="Belum ada video pembelajaran." icon={<CirclePlay size={42} color="#cbd5e1" />} /></div>
 
   return (
     <div className="screen">

@@ -4,7 +4,7 @@
  */
 import logo from '../assets/logo-bn.png'
 import Button from '../components/ui/Button'
-import { MdVerified, MdSchool, MdAssignment, MdPlayCircleOutline } from 'react-icons/md'
+import { BadgeCheck, GraduationCap, ClipboardList, CirclePlay } from 'lucide-react'
 import { toTitleCase } from '../lib/format'
 
 interface Props {
@@ -18,7 +18,7 @@ export default function WelcomeScreen({ nama, kelasLabel, onMasuk }: Props) {
     <div className="welcome-screen">
       <div className="welcome-card">
         <div className="welcome-badge">
-          <MdVerified size={14} color="#0284c7" /> Portal Resmi Siswa
+          <BadgeCheck size={14} color="#0284c7" /> Portal Resmi Siswa
         </div>
         <img src={logo} alt="Logo" className="welcome-logo" />
         <p className="welcome-hello">Selamat Datang Kembali</p>
@@ -27,9 +27,9 @@ export default function WelcomeScreen({ nama, kelasLabel, onMasuk }: Props) {
         <p className="welcome-desc">Akses tugas, materi, video & nilai dalam satu genggaman — tetap semangat belajar!</p>
 
         <div className="welcome-features">
-          <span className="welcome-chip"><MdAssignment size={14} /> Tugas</span>
-          <span className="welcome-chip"><MdSchool size={14} /> Materi</span>
-          <span className="welcome-chip"><MdPlayCircleOutline size={14} /> Video</span>
+          <span className="welcome-chip"><ClipboardList size={14} /> Tugas</span>
+          <span className="welcome-chip"><GraduationCap size={14} /> Materi</span>
+          <span className="welcome-chip"><CirclePlay size={14} /> Video</span>
         </div>
 
         <Button onClick={onMasuk} style={{ marginTop: '18px' }}>

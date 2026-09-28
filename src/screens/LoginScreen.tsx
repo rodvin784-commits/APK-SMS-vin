@@ -10,7 +10,7 @@ import { fetchMe, loginSiswa } from '../lib/api'
 import { mapErrorMessage } from '../lib/format'
 import type { Me } from '../lib/types'
 import logo from '../assets/logo-bn.png'
-import { MdVisibility, MdVisibilityOff, MdLockOutline, MdMailOutline, MdErrorOutline, MdArrowForward } from 'react-icons/md'
+import { Eye, EyeOff, Lock, Mail, CircleAlert, ArrowRight } from 'lucide-react'
 
 interface Props {
   onSuccess: (me: Me) => void // callback setelah login berhasil
@@ -108,7 +108,7 @@ export default function LoginScreen({ onSuccess, pesanAwal }: Props) {
 
         {error && (
           <div className="alert alert-error">
-            <MdErrorOutline size={18} style={{ flexShrink: 0 }} />
+            <CircleAlert size={18} style={{ flexShrink: 0 }} />
             <span>{error}</span>
           </div>
         )}
@@ -117,7 +117,7 @@ export default function LoginScreen({ onSuccess, pesanAwal }: Props) {
           {googleLoading ? (
             <span className="btn-loading"><span className="btn-spinner btn-spinner-dark" /> Memproses...</span>
           ) : (
-            <span className="btn-google-label"><MdArrowForward size={18} /> Masuk dengan Akun Belajar</span>
+            <span className="btn-google-label"><ArrowRight size={18} /> Masuk dengan Akun Belajar</span>
           )}
         </button>
 
@@ -129,7 +129,7 @@ export default function LoginScreen({ onSuccess, pesanAwal }: Props) {
             <label className="field">
               <span>Email</span>
               <div className="field-with-icon">
-                <MdMailOutline className="field-icon" size={18} />
+                <Mail className="field-icon" size={18} />
                 <input
                   type="email"
                   value={email}
@@ -144,7 +144,7 @@ export default function LoginScreen({ onSuccess, pesanAwal }: Props) {
             <label className="field">
               <span>Kata Sandi</span>
               <div className="field-with-icon">
-                <MdLockOutline className="field-icon" size={18} />
+                <Lock className="field-icon" size={18} />
                 <input
                   type={showPass ? 'text' : 'password'}
                   value={password}
@@ -154,7 +154,7 @@ export default function LoginScreen({ onSuccess, pesanAwal }: Props) {
                   autoComplete="current-password"
                 />
                 <button type="button" className="field-eye" onClick={() => setShowPass((v) => !v)} aria-label={showPass ? 'Sembunyikan' : 'Tampilkan'}>
-                  {showPass ? <MdVisibilityOff size={18} /> : <MdVisibility size={18} />}
+                  {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </label>

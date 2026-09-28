@@ -6,7 +6,7 @@ import Loading from '../components/ui/Loading'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 import EmptyState from '../components/ui/EmptyState'
-import { MdCampaign } from 'react-icons/md'
+import { Megaphone } from 'lucide-react'
 
 export default function PengumumanScreen() {
   const [items, setItems] = useState<PengumumanItem[]>([])
@@ -43,7 +43,7 @@ export default function PengumumanScreen() {
     )
   }
 
-  if (items.length === 0) return <div className="screen"><EmptyState message="Belum ada pengumuman." icon={<MdCampaign size={42} color="#cbd5e1" />} /></div>
+  if (items.length === 0) return <div className="screen"><EmptyState message="Belum ada pengumuman." icon={<Megaphone size={42} color="#cbd5e1" />} /></div>
 
   return (
     <div className="screen">

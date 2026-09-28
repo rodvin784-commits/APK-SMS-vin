@@ -6,7 +6,7 @@ import Loading from '../components/ui/Loading'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 import EmptyState from '../components/ui/EmptyState'
-import { MdOutlineCalendarMonth } from 'react-icons/md'
+import { CalendarDays } from 'lucide-react'
 
 const STATUS_COLOR: Record<string, string> = {
   hadir: 'bg-emerald-50 text-emerald-700 border-emerald-100',
@@ -38,7 +38,7 @@ export default function PresensiScreen() {
 
   if (loading) return <Loading message="Memuat presensi..." />
   if (error) return <div className="screen"><Alert variant="error" action={<Button variant="secondary" onClick={() => { setLoading(true); setReload(k=>k+1)}}>Coba lagi</Button>}>{error}</Alert></div>
-  if (data.length===0) return <div className="screen"><EmptyState message="Belum ada data presensi." icon={<MdOutlineCalendarMonth size={42} color="#cbd5e1" />} /></div>
+  if (data.length===0) return <div className="screen"><EmptyState message="Belum ada data presensi." icon={<CalendarDays size={42} color="#cbd5e1" />} /></div>
 
   const hadir = data.filter(d=>d.status==='hadir').length
   return (

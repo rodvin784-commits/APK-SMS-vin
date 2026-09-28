@@ -6,7 +6,7 @@ import Loading from '../components/ui/Loading'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 import EmptyState from '../components/ui/EmptyState'
-import { MdNotificationsNone } from 'react-icons/md'
+import { Bell } from 'lucide-react'
 
 interface Props { onCountChange?: (count: number) => void }
 
@@ -61,7 +61,7 @@ export default function NotifikasiScreen({ onCountChange }: Props) {
       {error && <Alert variant="error" action={<Button variant="secondary" onClick={muat}>Coba lagi</Button>}>{error}</Alert>}
 
       {items.length === 0 ? (
-        <EmptyState message="Belum ada notifikasi." icon={<MdNotificationsNone size={42} color="#cbd5e1" />} />
+        <EmptyState message="Belum ada notifikasi." icon={<Bell size={42} color="#cbd5e1" />} />
       ) : (
         items.map((n) => (
           <div key={n.id} className={`item-card ${n.is_read ? 'notif-read' : 'notif-unread'}`}>

@@ -6,7 +6,7 @@ import Loading from '../components/ui/Loading'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 import EmptyState from '../components/ui/EmptyState'
-import { MdEmojiEvents } from 'react-icons/md'
+import { Award } from 'lucide-react'
 
 export default function NilaiScreen() {
   const [nilai, setNilai] = useState<NilaiItem[]>([])
@@ -43,7 +43,7 @@ export default function NilaiScreen() {
     )
   }
 
-  if (nilai.length === 0) return <div className="screen"><EmptyState message="Belum ada nilai." icon={<MdEmojiEvents size={42} color="#cbd5e1" />} /></div>
+  if (nilai.length === 0) return <div className="screen"><EmptyState message="Belum ada nilai." icon={<Award size={42} color="#cbd5e1" />} /></div>
 
   return (
     <div className="screen">

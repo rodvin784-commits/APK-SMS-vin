@@ -52,14 +52,14 @@ export default function TugasCard({ tugas: t, fotoUrls, jawabanFotoUrls, onUnduh
       )}
 
       {t.pengumpulan?.nilai !== null && t.pengumpulan?.nilai !== undefined && (
-        <div style={{ marginTop: '0.6rem', display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 12px', borderRadius: '12px', background: '#f0fdf4', border: '1px solid #dcfce7' }}>
-          <span style={{ fontSize: '12px', fontWeight: 700, color: '#15803d' }}>Nilai: {t.pengumpulan.nilai}/100</span>
-          {t.pengumpulan.status === 'dinilai' && <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '999px', background: '#16a34a', color: 'white', fontWeight: 700 }}>DINILAI</span>}
+        <div className="mt-2 inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2">
+          <span className="text-xs font-bold text-emerald-700">Nilai: {t.pengumpulan.nilai}/100</span>
+          {t.pengumpulan.status === 'dinilai' && <span className="rounded-full bg-emerald-600 px-1.5 py-0.5 text-[10px] font-bold text-white">DINILAI</span>}
         </div>
       )}
       {t.pengumpulan?.feedback && (
-        <p className="item-desc" style={{ marginTop: '0.4rem', padding: '10px 12px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', fontSize: '13px' }}>
-          <b style={{ color: '#92400e' }}>Feedback guru:</b> {t.pengumpulan.feedback}
+        <p className="mt-1.5 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[13px] text-gray-800">
+          <b className="text-amber-800">Feedback guru:</b> {t.pengumpulan.feedback}
         </p>
       )}
 

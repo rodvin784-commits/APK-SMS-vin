@@ -43,9 +43,9 @@ export default function ProfileScreen({ me, onLogout }: { me: Me; onLogout: () =
   return (
     <div className="screen">
       <Card>
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 16 }}>
-          <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 800, color: '#0369a1', overflow: 'hidden' }}>
-            {me.siswa.foto_url ? <img src={me.siswa.foto_url} alt="foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (me.siswa.nama_lengkap?.charAt(0) ?? 'S')}
+        <div className="mb-4 flex items-center gap-4">
+          <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-sky-100 text-[28px] font-extrabold text-sky-700">
+            {me.siswa.foto_url ? <img src={me.siswa.foto_url} alt="foto" className="h-full w-full object-cover" /> : (me.siswa.nama_lengkap?.charAt(0) ?? 'S')}
           </div>
           <div>
             <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>{toTitleCase(me.siswa.nama_lengkap) || '-'}</h2>
@@ -63,7 +63,7 @@ export default function ProfileScreen({ me, onLogout }: { me: Me; onLogout: () =
       <button
         onClick={onLogout}
         aria-label="Keluar dari akun"
-        className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-white px-4 text-sm font-bold text-red-600 transition-colors active:scale-[0.98] dark:border-red-500/30 dark:bg-transparent dark:text-red-400"
+        className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-white px-4 text-sm font-bold text-red-600"
       >
         <LogOut className="h-4 w-4" aria-hidden />
         Keluar dari Akun
@@ -71,11 +71,11 @@ export default function ProfileScreen({ me, onLogout }: { me: Me; onLogout: () =
       <Card>
         <h3 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 800 }}>Ganti Sandi (1x)</h3>
         <p className="item-meta" style={{ margin: '0 0 8px' }}>Sisa: {remaining} / 1 {used>=1 && <span style={{color:'#e11d48'}}>sudah dipakai</span>}</p>
-        {msg && <div style={{ padding: '8px 12px', borderRadius: 12, fontSize: 13, marginBottom: 8, background: msg.type==='success'?'#ecfdf5':'#fff1f2', color: msg.type==='success'?'#065f46':'#9f1239'}}>{msg.text}</div>}
-        <form onSubmit={submit} style={{ display:'grid', gap: 8 }}>
-          <input type="password" placeholder="Password lama" value={curr} onChange={e=>setCurr(e.target.value)} required style={{ padding:'10px 12px', borderRadius:12, border:'1px solid #e2e8f0', background:'#f8fafc', fontSize:13 }} />
-          <input type="password" placeholder="Password baru (min 6)" value={next} onChange={e=>setNext(e.target.value)} required disabled={remaining===0} style={{ padding:'10px 12px', borderRadius:12, border:'1px solid #e2e8f0', background:'#f8fafc', fontSize:13 }} />
-          <button type="submit" disabled={saving || remaining===0} style={{ padding:'10px', borderRadius:12, background: remaining===0?'#e2e8f0':'#0f172a', color:'white', fontWeight:700, fontSize:13, opacity: saving||remaining===0?0.5:1 }}>{saving?'Menyimpan...': remaining===0 ? 'Sudah 1x — Hubungi admin' : 'Ganti Sandi'}</button>
+        {msg && <div className={`mb-2 rounded-xl px-3 py-2 text-[13px] font-medium ${msg.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>{msg.text}</div>}
+        <form onSubmit={submit} className="grid gap-2">
+          <input type="password" placeholder="Password lama" value={curr} onChange={e=>setCurr(e.target.value)} required className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-[13px] text-gray-900 placeholder:text-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30" />
+          <input type="password" placeholder="Password baru (min 6)" value={next} onChange={e=>setNext(e.target.value)} required disabled={remaining===0} className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-[13px] text-gray-900 placeholder:text-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 disabled:opacity-50" />
+          <button type="submit" disabled={saving || remaining===0} className="min-h-[44px] rounded-xl bg-slate-900 px-3 text-[13px] font-bold text-white transition-opacity disabled:opacity-50">{saving?'Menyimpan...': remaining===0 ? 'Sudah 1x — Hubungi admin' : 'Ganti Sandi'}</button>
         </form>
       </Card>
     </div>

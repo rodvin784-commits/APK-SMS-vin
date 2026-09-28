@@ -51,14 +51,6 @@ export default function App() {
   // menyegarkan sesi tanpa memunculkan Welcome lagi setelah user menutupnya.
   // Direset saat logout agar login berikutnya tetap disapa.
   const sambutanTerkirimRef = useRef<string | null>(null)
-  const [darkMode, setDarkMode] = useState(() => {
-    try { return localStorage.getItem('siswa_dark') === '1' } catch { return false }
-  })
-
-  useEffect(() => {
-    try { localStorage.setItem('siswa_dark', darkMode ? '1' : '0') } catch { void 0 }
-    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light')
-  }, [darkMode])
 
   const { unreadCount, setUnreadCount } = usePollingNotifikasi(!!sesi.me && !showWelcome && !showSplash)
 
@@ -231,7 +223,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <AppHeader unreadCount={unreadCount} darkMode={darkMode} userName={toTitleCase(me.siswa.nama_lengkap ?? '')} onToggleDark={() => setDarkMode((v) => !v)} onOpenNotifikasi={() => setTab('notifikasi')} onOpenProfile={() => setTab('profile')} />
+      <AppHeader unreadCount={unreadCount} userName={toTitleCase(me.siswa.nama_lengkap ?? '')} onOpenNotifikasi={() => setTab('notifikasi')} onOpenProfile={() => setTab('profile')} />
 
       <main className="app-main-new">
         <Suspense fallback={<Loading message="Memuat..." />}>

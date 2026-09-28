@@ -4,7 +4,7 @@
  * Layar lain (Materi, Video, Info, Hadir, Notif) dibuka dari menu "Lainnya" di Beranda.
  */
 import type { ReactNode } from 'react'
-import { MdOutlineHome, MdOutlineAssignment, MdOutlineCalendarMonth, MdOutlineEmojiEvents, MdPersonOutline } from 'react-icons/md'
+import { House, ClipboardList, CalendarDays, Award, UserRound } from 'lucide-react'
 
 // Tipe tab yang diakui App.tsx — 'profile' tampil di nav; materi/video/dll tetap
 // dirender App tapi dibuka dari menu "Lainnya" (bukan BottomNav).
@@ -18,11 +18,11 @@ interface TabDef {
 }
 
 export const TABS: TabDef[] = [
-  { id: 'dashboard', icon: () => <MdOutlineHome size={24} />, label: 'Home' },
-  { id: 'tugas', icon: () => <MdOutlineAssignment size={24} />, label: 'Tugas' },
-  { id: 'jadwal', icon: () => <MdOutlineCalendarMonth size={24} />, label: 'Jadwal' },
-  { id: 'nilai', icon: () => <MdOutlineEmojiEvents size={24} />, label: 'Nilai' },
-  { id: 'profile', icon: () => <MdPersonOutline size={24} />, label: 'Profil' },
+  { id: 'dashboard', icon: () => <House size={24} />, label: 'Home' },
+  { id: 'tugas', icon: () => <ClipboardList size={24} />, label: 'Tugas' },
+  { id: 'jadwal', icon: () => <CalendarDays size={24} />, label: 'Jadwal' },
+  { id: 'nilai', icon: () => <Award size={24} />, label: 'Nilai' },
+  { id: 'profile', icon: () => <UserRound size={24} />, label: 'Profil' },
 ]
 
 interface Props {

@@ -90,7 +90,7 @@
   display:block;
   font-size:11px;
   font-weight:700;
-  color:#334155;
+  color:var(--text-2);
   margin-bottom:7px;
   text-transform:uppercase;
   letter-spacing:.5px;
@@ -100,22 +100,23 @@
 .form-kumpul textarea{
   width:100%;
   padding:13px 14px;
-  border:1.5px solid #e2e8f0;
+  border:1.5px solid var(--border);
   border-radius:12px;
   font-size:15px;
-  background:#f8fafc;
+  color:var(--text);
+  background:var(--surface-2);
   transition: all .18s ease;
   font-family:inherit;
 }
 .field input::placeholder,
 .form-kumpul input::placeholder,
-.form-kumpul textarea::placeholder{ color:#94a3b8; }
+.form-kumpul textarea::placeholder{ color:var(--text-3); }
 .field input:focus,
 .form-kumpul input:focus,
 .form-kumpul textarea:focus{
   outline:none;
   border-color:#38bdf8;
-  background:#fff;
+  background:var(--surface);
   box-shadow:0 0 0 4px rgba(56,189,248,.12);
 }
 
@@ -139,10 +140,10 @@ button{ font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transpa
 .btn-primary:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
 .btn-secondary{
   padding:9px 14px;
-  border:1.5px solid #e2e8f0;
+  border:1.5px solid var(--border);
   border-radius:10px;
-  background:#fff;
-  color:#0f172a;
+  background:var(--surface);
+  color:var(--text);
   font-size:13px;
   font-weight:600;
   transition: all .16s ease;
@@ -402,7 +403,6 @@ button{ font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transpa
 .nav-btn:active{ transform:scale(.96); background:var(--surface-2); }
 .nav-active{ color:#4F46E5; }
 .nav-active .nav-label-new{ color:#4F46E5; font-weight:700; }
-[data-theme='dark'] .nav-active, [data-theme='dark'] .nav-active .nav-label-new{ color:#818CF8; }
 .nav-badge{
   position:absolute; top:0; right:6px;
   background:#ef4444; color:#fff;
@@ -411,7 +411,6 @@ button{ font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transpa
   padding:0 4px; border:2px solid #fff; box-shadow:0 1px 4px rgba(239,68,68,.4);
 }
 .nav-label-new{ font-size:10px; color:#94A3B8; font-weight:500; letter-spacing:.1px; }
-[data-theme='dark'] .nav-label-new{ color:var(--text-3); }
 .nav-label-active{ color:var(--primary); }
 
 /* ---------- Progress ---------- */
@@ -421,12 +420,6 @@ button{ font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transpa
   background:linear-gradient(90deg, #0ea5e9, #0284c7);
   transition: width .2s ease;
 }
-
-/* ---------- Dark overrides ---------- */
-[data-theme='dark'] .app-header-new{ background:rgba(19,32,51,.84); border-bottom-color:rgba(30,47,74,.9); }
-[data-theme='dark'] .bottom-nav-new{ background:rgba(19,32,51,.92); border-top-color:rgba(30,47,74,.9); }
-[data-theme='dark'] .login-card{ background:rgba(255,255,255,.98); }
-[data-theme='dark'] input,[data-theme='dark'] textarea{ background:var(--surface-2); border-color:var(--border); color:var(--text); }
 
 /* ---------- Welcome — minimal ---------- */
 .welcome-screen{

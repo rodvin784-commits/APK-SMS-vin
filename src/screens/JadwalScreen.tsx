@@ -7,7 +7,7 @@ import Loading from '../components/ui/Loading'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 import EmptyState from '../components/ui/EmptyState'
-import { MdCalendarToday } from 'react-icons/md'
+import { CalendarDays } from 'lucide-react'
 
 const HARI = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
 
@@ -53,7 +53,7 @@ export default function JadwalScreen() {
     )
   }
 
-  if (jadwal.length === 0) return <div className="screen"><EmptyState message="Belum ada jadwal untuk kelas Anda." icon={<MdCalendarToday size={42} color="#cbd5e1" />} /></div>
+  if (jadwal.length === 0) return <div className="screen"><EmptyState message="Belum ada jadwal untuk kelas Anda." icon={<CalendarDays size={42} color="#cbd5e1" />} /></div>
 
   return (
     <div className="screen">
