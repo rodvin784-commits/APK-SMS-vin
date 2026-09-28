@@ -397,12 +397,12 @@ button{ font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transpa
   background:none; border:none; padding:5px 8px; cursor:pointer;
   position:relative; border-radius:10px; min-width:56px; min-height:52px;
   transition: background .15s, transform .12s, color .15s;
-  color:#9CA3AF;
+  color:#94A3B8;
 }
 .nav-btn:active{ transform:scale(.96); background:var(--surface-2); }
-.nav-active{ color:#2563EB; }
-.nav-active .nav-label-new{ color:#2563EB; font-weight:700; }
-[data-theme='dark'] .nav-active, [data-theme='dark'] .nav-active .nav-label-new{ color:#60A5FA; }
+.nav-active{ color:#4F46E5; }
+.nav-active .nav-label-new{ color:#4F46E5; font-weight:700; }
+[data-theme='dark'] .nav-active, [data-theme='dark'] .nav-active .nav-label-new{ color:#818CF8; }
 .nav-badge{
   position:absolute; top:0; right:6px;
   background:#ef4444; color:#fff;
@@ -410,7 +410,8 @@ button{ font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transpa
   border-radius:999px; display:flex; align-items:center; justify-content:center;
   padding:0 4px; border:2px solid #fff; box-shadow:0 1px 4px rgba(239,68,68,.4);
 }
-.nav-label-new{ font-size:10px; color:var(--text-3); font-weight:500; letter-spacing:.1px; }
+.nav-label-new{ font-size:10px; color:#94A3B8; font-weight:500; letter-spacing:.1px; }
+[data-theme='dark'] .nav-label-new{ color:var(--text-3); }
 .nav-label-active{ color:var(--primary); }
 
 /* ---------- Progress ---------- */

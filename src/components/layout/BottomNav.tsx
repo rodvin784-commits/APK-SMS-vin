@@ -4,7 +4,7 @@
  * Layar lain (Materi, Video, Info, Hadir, Notif) dibuka dari menu "Lainnya" di Beranda.
  */
 import type { ReactNode } from 'react'
-import { MdHome, MdOutlineAssignment, MdOutlineCalendarMonth, MdEmojiEvents, MdPersonOutline } from 'react-icons/md'
+import { MdOutlineHome, MdOutlineAssignment, MdOutlineCalendarMonth, MdOutlineEmojiEvents, MdPersonOutline } from 'react-icons/md'
 
 // Tipe tab yang diakui App.tsx — 'profile' tampil di nav; materi/video/dll tetap
 // dirender App tapi dibuka dari menu "Lainnya" (bukan BottomNav).
@@ -18,10 +18,10 @@ interface TabDef {
 }
 
 export const TABS: TabDef[] = [
-  { id: 'dashboard', icon: () => <MdHome size={24} />, label: 'Home' },
+  { id: 'dashboard', icon: () => <MdOutlineHome size={24} />, label: 'Home' },
   { id: 'tugas', icon: () => <MdOutlineAssignment size={24} />, label: 'Tugas' },
   { id: 'jadwal', icon: () => <MdOutlineCalendarMonth size={24} />, label: 'Jadwal' },
-  { id: 'nilai', icon: () => <MdEmojiEvents size={24} />, label: 'Nilai' },
+  { id: 'nilai', icon: () => <MdOutlineEmojiEvents size={24} />, label: 'Nilai' },
   { id: 'profile', icon: () => <MdPersonOutline size={24} />, label: 'Profil' },
 ]
 
