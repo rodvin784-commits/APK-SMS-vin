@@ -73,8 +73,8 @@ export default function VideoScreen() {
         return (
           <div key={v.id} className="item-card">
             {thumb && !isPlaying && (
-              <div style={{ position: 'relative', width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', background: '#0f172a', cursor: embed ? 'pointer' : 'default' }} onClick={() => embed && setPlayingId(v.id)}>
-                <img src={thumb} alt={v.judul} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
+              <div className="video-thumb" onClick={() => embed && setPlayingId(v.id)}>
+                <img src={thumb} alt={v.judul} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
                 {embed && (
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(15,23,42,0.32)' }}>
                     <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(239,68,68,0.96)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', color: 'white', boxShadow: '0 4px 16px rgba(0,0,0,.3)' }}>▶</div>

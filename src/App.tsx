@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import './App.css'
 import { supabase } from './lib/supabase'
 import { fetchMe, logoutSiswa } from './lib/api'
@@ -42,6 +42,16 @@ export default function App() {
   const [showSplash, setShowSplash] = useState(true)
   const [showWelcome, setShowWelcome] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
+  // Pesan info untuk layar login (mis. akun ternyata milik guru) — agar user tidak bingung
+  // saat sesi ditolak server. Dibersihkan setiap login sukses.
+  const [infoLogin, setInfoLogin] = useState<string | null>(null)
+  // Ref ke penukar sesi → dipakai listener deep link OAuth (didefinisikan di effect bawah).
+  const masukRef = useRef<() => Promise<void>>(async () => undefined)
+  // Anti Welcome ganda: Welcome tampil maksimal sekali per user per ronde login.
+  // Duplikat lambat (SIGNED_IN + deep link + polling fallback jalan bareng) hanya
+  // menyegarkan sesi tanpa memunculkan Welcome lagi setelah user menutupnya.
+  // Direset saat logout agar login berikutnya tetap disapa.
+  const sambutanTerkirimRef = useRef<string | null>(null)
   const [darkMode, setDarkMode] = useState(() => {
     try { return localStorage.getItem('siswa_dark') === '1' } catch { return false }
   })
@@ -68,25 +78,107 @@ export default function App() {
   }, [sesi.me, showWelcome, showSplash])
 
   useEffect(() => {
-    supabase.auth
-      .getSession()
-      .then(({ data: { session } }) => {
+    let batal = false
+    // Tukar sesi Supabase → profil siswa. Dipakai getSession awal, listener SIGNED_IN,
+    // dan deep link kembalian OAuth (appUrlOpen) di bawah.
+    const masukDenganSesiInner = async () => {
+      try {
+        const me = await fetchMe()
+        try { setSiswaScope(me.siswa.id) } catch { /* abaikan */ }
+        if (batal) return
+        setInfoLogin(null)
+        setSesi({ me, loading: false })
+        if (sambutanTerkirimRef.current !== me.siswa.id) {
+          sambutanTerkirimRef.current = me.siswa.id
+          setShowWelcome(true)
+        }
+      } catch (err) {
+        await supabase.auth.signOut()
+        if (batal) return
+        const pesan = err instanceof Error ? err.message : 'Gagal memuat profil.'
+        // Kasus umum: akun Google milik guru / bukan siswa aktif → jelaskan, jangan diam.
+        setInfoLogin(
+          /hanya siswa|tidak ditemukan/i.test(pesan)
+            ? 'Akun ini terdaftar sebagai guru/admin atau belum jadi siswa aktif. APK ini khusus siswa — guru silakan login via web.'
+            : pesan
+        )
+        setSesi({ me: null, loading: false })
+      }
+    }
+    masukRef.current = masukDenganSesiInner
+    const muatSesi = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (batal) return
         if (!session) {
           setSesi({ me: null, loading: false })
           return
         }
-        return fetchMe()
-          .then((me) => {
-            try { setSiswaScope(me.siswa.id) } catch {}
-            setSesi({ me, loading: false })
-            setShowWelcome(true)
-          })
-          .catch(() => {
-            supabase.auth.signOut()
+        await masukDenganSesiInner()
+      } catch {
+        if (!batal) setSesi({ me: null, loading: false })
+      }
+    }
+    // Setelah OAuth redirect, penukaran code→sesi (PKCE) bisa selesai SETELAH getSession
+    // pertama. Listener ini menutup balapan: sesi yang muncul belakangan tetap diproses.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (batal) return
+      if (event === 'SIGNED_IN' && session) {
+        void masukDenganSesiInner()
+      } else if (event === 'SIGNED_OUT') {
+        sambutanTerkirimRef.current = null
+        setSesi({ me: null, loading: false })
+        setShowWelcome(false)
+      }
+    })
+    void muatSesi()
+    return () => { batal = true; subscription.unsubscribe() }
+  }, [])
+
+  // Deep link kembalian OAuth Google (native): com.vin.siswa://login-callback
+  // Supabase bisa pulang via 2 format: ?code=... (PKCE) atau #access_token=... (implicit).
+  // Tangani keduanya → simpan sesi → lanjut seperti login biasa.
+  useEffect(() => {
+    let hapus: (() => void) | undefined
+    ;(async () => {
+      try {
+        const { App: CapApp } = await import('@capacitor/app')
+        const { Browser } = await import('@capacitor/browser')
+        const listener = await CapApp.addListener('appUrlOpen', async (event) => {
+          try {
+            await Browser.close().catch(() => undefined)
+            const url = new URL(event.url)
+            const code = url.searchParams.get('code')
+            if (code) {
+              const { error } = await supabase.auth.exchangeCodeForSession(code)
+              if (error) {
+                setInfoLogin('Login Google gagal: ' + error.message)
+                setSesi({ me: null, loading: false })
+                return
+              }
+            } else {
+              // Format implicit: token menempel di fragment URL.
+              const frag = new URLSearchParams(url.hash.replace(/^#/, ''))
+              const access_token = frag.get('access_token')
+              const refresh_token = frag.get('refresh_token') ?? ''
+              if (!access_token) return
+              const { error } = await supabase.auth.setSession({ access_token, refresh_token })
+              if (error) {
+                setInfoLogin('Login Google gagal: ' + error.message)
+                setSesi({ me: null, loading: false })
+                return
+              }
+            }
+            await masukRef.current()
+          } catch (err) {
+            setInfoLogin(err instanceof Error ? err.message : 'Login Google gagal.')
             setSesi({ me: null, loading: false })
-          })
-      })
-      .catch(() => setSesi({ me: null, loading: false }))
+          }
+        })
+        hapus = () => { void listener.remove() }
+      } catch { /* bukan native (web dev) — abaikan */ }
+    })()
+    return () => { hapus?.() }
   }, [])
 
   // Logout sederhana dengan konfirmasi agar awam tidak salah tap.
@@ -95,6 +187,7 @@ export default function App() {
     if (!yakin) return
     await logoutSiswa()
     clearAllCacheIncludingScope()
+    sambutanTerkirimRef.current = null
     setSesi({ me: null, loading: false })
     setShowWelcome(false)
     setTab('dashboard')
@@ -111,10 +204,15 @@ export default function App() {
   if (!sesi.me) {
     return (
       <LoginScreen
+        pesanAwal={infoLogin}
         onSuccess={(me: Me) => {
-          try { setSiswaScope(me.siswa.id); clearAllCache() } catch {}
+          try { setSiswaScope(me.siswa.id); clearAllCache() } catch { /* abaikan */ }
+          setInfoLogin(null)
           setSesi({ me, loading: false })
-          setShowWelcome(true)
+          if (sambutanTerkirimRef.current !== me.siswa.id) {
+            sambutanTerkirimRef.current = me.siswa.id
+            setShowWelcome(true)
+          }
         }}
       />
     )

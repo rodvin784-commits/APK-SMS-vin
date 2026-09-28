@@ -31,10 +31,10 @@ export default function FotoPicker({ files, previews, onAdd, onRemove }: Props) 
       <input ref={fotoInputRef} type="file" accept="image/*" multiple onChange={(e) => onAdd(e.target.files)} style={{ display: 'none' }} />
       <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={(e) => onAdd(e.target.files)} style={{ display: 'none' }} />
       {previews.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px', marginTop: '8px' }}>
+        <div className="foto-grid">
           {previews.map((src, idx) => (
             <div key={idx} style={{ position: 'relative' }}>
-              <img src={src} alt={`Preview ${idx + 1}`} style={{ width: '100%', height: '90px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e5e7eb' }} />
+              <img src={src} alt={`Preview ${idx + 1}`} style={{ width: '100%', height: '100%', minHeight: '80px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e5e7eb', display: 'block' }} />
               <button type="button" onClick={() => onRemove(idx)} style={{ position: 'absolute', top: '-6px', right: '-6px', background: '#ef4444', color: 'white', borderRadius: '50%', width: '22px', height: '22px', border: 'none', cursor: 'pointer' }}>×</button>
               <div style={{ fontSize: '10px', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{files[idx]?.name}</div>
             </div>

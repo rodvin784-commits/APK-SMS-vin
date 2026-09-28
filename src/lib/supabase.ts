@@ -9,6 +9,13 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     // Sesi disimpan di localStorage WebView: login tetap tercatat setelah app ditutup.
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: false,
+    // WAJIB true untuk login Google: setelah OAuth redirect kembali ke WebView
+    // (http://localhost/?code=...), client harus menukar code PKCE jadi sesi.
+    // Dengan false, polling getSession tidak akan pernah menemukan sesi baru.
+    detectSessionInUrl: true,
+    // Minta alur PKCE (?code=...) ke Supabase. Catatan: server kadang tetap pulang
+    // via fragment (#access_token=...) untuk deep link custom scheme — App.tsx
+    // menangani KEDUA format di listener appUrlOpen, jadi login tidak mentok.
+    flowType: 'pkce',
   },
 })

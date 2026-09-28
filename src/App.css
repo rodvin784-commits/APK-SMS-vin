@@ -485,6 +485,33 @@ button{ font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transpa
   border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite;
 }
 .login-foot{ text-align:center; font-size:11.5px; color:var(--text-3); margin:12px 0 0; }
+.login-foot a{ color:#0284c7; font-weight:700; text-decoration:none; }
+.login-foot a:hover{ text-decoration:underline; }
+
+/* ---------- Login minimal: tombol Google + pembatas + opsi password ---------- */
+.btn-google{
+  background:#fff; color:#1f2937;
+  border:1.5px solid #e5e7eb;
+  box-shadow:0 1px 2px rgba(0,0,0,.06);
+}
+.btn-google:hover:not(:disabled){ background:#f8fafc; border-color:#cbd5e1; }
+.btn-google-label{ display:inline-flex; align-items:center; gap:8px; }
+.btn-spinner-dark{ border-color:#e5e7eb !important; border-top-color:#111 !important; }
+.login-divider{
+  display:flex; align-items:center; gap:8px; margin:12px 0;
+}
+.login-divider::before, .login-divider::after{
+  content:''; flex:1; height:1px; background:#e5e7eb;
+}
+.login-divider span{ font-size:11px; color:#9ca3af; }
+.login-details summary{
+  font-size:13px; font-weight:700; color:#374151;
+  cursor:pointer; text-align:center; list-style:none;
+  padding:6px; border-radius:8px;
+}
+.login-details summary::-webkit-details-marker{ display:none; }
+.login-details summary:hover{ color:#0284c7; background:#f0f9ff; }
+.login-form{ margin-top:12px; }
 
 /* ---------- Nilai & Video ---------- */
 .nilai-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
@@ -499,3 +526,141 @@ button{ font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transpa
 .notif-read{ opacity:.78; }
 .video-frame{ position:relative; padding-top:56.25%; border-radius:12px; overflow:hidden; margin-bottom:10px; background:#0f172a; box-shadow:var(--shadow); }
 .video-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+
+/* ============================================================
+   RESPONSIF — mobile-first: HP kecil → tablet → desktop
+   ============================================================ */
+/* Base anti-overflow */
+img, video, iframe{ max-width:100%; }
+table{ width:100%; max-width:100%; display:block; overflow-x:auto; }
+.screen, .item-card, .dashboard-screen{ min-width:0; }
+
+/* BottomNav 9 tab: boleh geser horizontal di HP kecil agar tidak sesak */
+.bottom-nav-new{ overflow-x:auto; scrollbar-width:none; }
+.bottom-nav-new::-webkit-scrollbar{ display:none; }
+.nav-btn{ flex:1 0 auto; }
+
+/* Login / Welcome: batasi lebar kartu agar rapi di tablet/desktop */
+.login-card, .welcome-card{ width:100%; max-width:440px; margin:0 auto; }
+
+/* Judul & hero pakai clamp agar mengecil di HP kecil, membesar di tablet */
+.user-name{ font-size:clamp(18px, 5.4vw, 24px); overflow-wrap:anywhere; }
+.hero-title{ font-size:clamp(16px, 4.6vw, 20px); overflow-wrap:anywhere; }
+.card-title, .item-head strong{ overflow-wrap:anywhere; }
+.card-subtitle, .item-desc, .item-meta{ overflow-wrap:anywhere; }
+
+/* ---------- HP sangat kecil (<=360px) ---------- */
+@media (max-width: 360px){
+  .app-main-new{ padding:0 10px 86px; }
+  .greeting-container{ flex-direction:column; gap:10px; }
+  .date-container{ align-items:flex-start; align-self:flex-start; }
+  .date-text{ text-align:left; }
+  .hero-banner{ flex-direction:column; align-items:flex-start; gap:10px; }
+  .stats-grid{ gap:8px; }
+  .stat-card{ padding:12px 10px 10px; }
+  .stat-count{ font-size:18px; }
+  .nav-btn{ min-width:52px; padding:5px 6px; }
+  .nav-label-new{ font-size:9px; }
+  .jadwal-card{ gap:10px; padding:10px 12px; }
+  .jadwal-time{ min-width:64px; padding:6px 8px; }
+  .form-kumpul input, .form-kumpul textarea{ font-size:14px; }
+}
+
+/* ---------- Tablet kecil (>=600px) ---------- */
+@media (min-width: 600px){
+  #root{ max-width:640px; }
+  .bottom-nav-new{ max-width:640px; padding:8px 12px calc(8px + env(safe-area-inset-bottom)); }
+  .app-main-new{ padding:0 20px 96px; }
+  .login-screen{ padding:32px 24px; }
+  .login-card{ padding:32px 28px 22px; }
+  .stats-grid{ gap:12px; }
+  .hero-banner{ padding:20px 20px; }
+}
+
+/* ---------- Tablet (>=768px): konten 2 kolom ---------- */
+@media (min-width: 768px){
+  #root{ max-width:900px; }
+  .bottom-nav-new{ max-width:900px; justify-content:center; gap:4px; }
+  .nav-btn{ min-width:72px; padding:8px 14px; }
+  .nav-label-new{ font-size:11px; }
+
+  /* Dashboard: statistik 4 sejajar */
+  .stats-grid{ grid-template-columns:repeat(4, 1fr); }
+
+  /* Daftar kartu (tugas/materi/video/nilai/pengumuman/notifikasi): 2 kolom.
+     Baris kontrol (search/alert/toolbar/tombol) selalu selebar penuh. */
+  .screen{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start;
+  }
+  .screen > .alert,
+  .screen > .screen-toolbar,
+  .screen > button,
+  .screen > p.kosong,
+  .screen > .kosong{ grid-column:1 / -1; }
+  /* Search box TugasScreen (div pembungkus input) */
+  .screen > div:has(> input[placeholder*="Cari"]){ grid-column:1 / -1; }
+
+  /* Dashboard: jadwal & tugas & pengumuman jadi 2 kolom */
+  .dashboard-screen{ display:grid; grid-template-columns:1fr 1fr; gap:0 12px; align-items:start; }
+  .dashboard-screen > .greeting-container,
+  .dashboard-screen > .hero-banner,
+  .dashboard-screen > .stats-grid,
+  .dashboard-screen > .section-header,
+  .dashboard-screen > .empty-card{ grid-column:1 / -1; }
+  /* Spacer bawah dashboard */
+  .dashboard-screen > div:last-child{ grid-column:1 / -1; }
+
+  .greeting-container{ align-items:center; }
+  .jadwal-card, .task-card, .announcement-card{ margin-bottom:12px; }
+  .nilai-grid{ gap:10px; }
+}
+
+/* ---------- Laptop/Desktop (>=1024px): konten 3 kolom + sidebar semu ---------- */
+@media (min-width: 1024px){
+  #root{ max-width:1100px; box-shadow:0 0 0 1px var(--border); }
+  .bottom-nav-new{ max-width:1100px; justify-content:center; gap:8px; }
+  .nav-btn{ min-width:84px; }
+  .app-main-new{ padding:0 28px 100px; max-width:1100px; margin:0 auto; width:100%; }
+  .app-header-new{ padding:12px 28px; max-width:1100px; margin:0 auto; width:100%; }
+
+  /* Daftar kartu: 3 kolom di desktop */
+  .screen{ grid-template-columns:repeat(3, 1fr); }
+
+  /* Video: thumbnail lebih tinggi di layar lebar */
+  .video-frame{ margin-bottom:12px; }
+  .item-card{ padding:16px 18px; }
+  .welcome-screen{ padding:40px 24px; }
+  .login-screen{ padding:48px 24px; }
+}
+
+/* ---------- Desktop lebar (>=1280px) ---------- */
+@media (min-width: 1280px){
+  #root{ max-width:1200px; }
+  .bottom-nav-new{ max-width:1200px; }
+  .app-main-new, .app-header-new{ max-width:1200px; }
+}
+
+/* ---------- Landscape HP (tinggi kecil): hemat ruang vertikal ---------- */
+@media (max-height: 500px) and (orientation: landscape){
+  .login-screen{ padding:16px; align-items:flex-start; }
+  .login-card{ padding:20px 18px 14px; }
+  .login-logo{ width:48px; height:48px; margin-bottom:8px; }
+  .welcome-screen{ padding:16px; align-items:flex-start; }
+  .app-main-new{ padding-bottom:76px; }
+}
+
+/* ---------- Grid foto (TugasCard & FotoPicker): responsif ---------- */
+.foto-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:8px; }
+.foto-grid img{ width:100%; height:80px; object-fit:cover; border-radius:8px; border:1px solid #e5e7eb; display:block; }
+@media (min-width: 768px){
+  .foto-grid{ grid-template-columns:repeat(4,1fr); gap:8px; }
+  .foto-grid img{ height:110px; }
+}
+@media (min-width: 1024px){
+  .foto-grid{ grid-template-columns:repeat(5,1fr); }
+  .foto-grid img{ height:120px; }
+}
+
+/* ---------- Thumbnail video: responsif (ganti height fix 180px) ---------- */
+.video-thumb{ position:relative; width:100%; aspect-ratio:16/9; max-height:320px; border-radius:12px; overflow:hidden; background:#0f172a; cursor:pointer; }
+.video-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
